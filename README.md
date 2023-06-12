@@ -34,3 +34,9 @@ Install Kanban API (requires sudo on linux) `$ npm install -g @ag04/kanban-api`
 Start Kanban API `$ kanban-api-start`
 
 Reset database data `$ kanban-api-flush-db`
+
+## Technical requirements
+Angular
+
+## Task details and progress tracking
+[Trello board](https://trello.com/b/Rvd5uTYT/kanban-board-josip)

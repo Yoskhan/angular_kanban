@@ -1,0 +1,117 @@
+<div class="example-container">
+  <form class="auth-form" #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
+    <mat-form-field>
+      <mat-label for="username">Enter your username</mat-label>
+      <input
+        id="username"
+        matInput
+        required
+        [(ngModel)]="model.username"
+        name="username"
+        username
+        autocomplete="current-password"
+        #usernameNgModel="ngModel"
+      />
+      <mat-error
+        *ngIf="
+          usernameNgModel.invalid &&
+          (usernameNgModel.dirty || usernameNgModel.touched)
+        "
+      >
+        <ng-container *ngIf="usernameNgModel.errors?.['required']">
+          Username is required
+        </ng-container>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label for="password">Enter your password</mat-label>
+      <input
+        id="password"
+        matInput
+        [type]="hidePassword ? 'password' : 'text'"
+        [(ngModel)]="model.password"
+        name="password"
+        autocomplete="current-password"
+        required
+        minlength="8"
+        pattern=".*\d+.*"
+        #passwordNgModel="ngModel"
+      />
+      <mat-error
+        *ngIf="
+          passwordNgModel.invalid &&
+          (passwordNgModel.dirty || passwordNgModel.touched)
+        "
+      >
+        <ng-container *ngIf="passwordNgModel.errors?.['minlength']">
+          Password must be at least 8 characters long
+        </ng-container>
+        <ng-container *ngIf="passwordNgModel.errors?.['required']">
+          Password is required
+        </ng-container>
+        <ng-container *ngIf="passwordNgModel.errors?.['pattern']">
+          Password must contain at least one number
+        </ng-container>
+      </mat-error>
+
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        (click)="hidePassword = !hidePassword"
+      >
+        <mat-icon>{{
+          hidePassword ? "visibility_off" : "visibility"
+        }}</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="!isLoginMode">
+      <mat-label for="confirmPassword">Confirm your password</mat-label>
+      <input
+        type="text"
+        id="confirmPassword"
+        matInput
+        [type]="hideConfirmPassword ? 'password' : 'text'"
+        [(ngModel)]="model.confirmPassword"
+        name="confirmPassword"
+        autocomplete="email"
+        required
+        #confirmPasswordNgModel="ngModel"
+        ngValidateEqual="password"
+      />
+      <mat-error
+        *ngIf="
+          (confirmPasswordNgModel.dirty || confirmPasswordNgModel.touched) &&
+          confirmPasswordNgModel.invalid
+        "
+      >
+        <ng-container *ngIf="confirmPasswordNgModel.hasError('notEqual')">
+          Password must match.
+        </ng-container>
+      </mat-error>
+
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        (click)="hideConfirmPassword = !hideConfirmPassword"
+      >
+        <mat-icon>{{
+          hideConfirmPassword ? "visibility_off" : "visibility"
+        }}</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="auth-form__errorMessage" *ngIf="error">Error: {{ error }}</div>
+
+    <button mat-raised-button color="primary">
+      {{ isLoginMode ? "Login" : "Sign Up" }}
+    </button>
+    <p class="auth-form__switch-button" (click)="onSwitchMode(authForm)">
+      <span *ngIf="isLoginMode">Switch to Sign Up</span>
+      <span *ngIf="!isLoginMode">Switch to Login</span>
+    </p>
+  </form>
+</div>

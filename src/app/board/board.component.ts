@@ -5,20 +5,22 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DataStorageService } from '../shared/data-storage-service';
 import { BoardService } from './board-service';
 import { Task, Tasks } from './tasks.model';
 import { Subscription } from 'rxjs';
+import { Status as taskStatus } from './tasks.model';
 
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
 })
-export class BoardComponent implements OnInit {
-  private subscription!: Subscription;
+export class BoardComponent implements OnInit, OnDestroy {
   tasks: Tasks = { todo: [], doing: [], done: [] };
+  taskStats = taskStatus;
+  private subscription: Subscription = new Subscription();
 
   constructor(
     private dataStorageService: DataStorageService,
@@ -28,20 +30,23 @@ export class BoardComponent implements OnInit {
   ngOnInit(): void {
     this.dataStorageService.fetchBoard().subscribe();
 
-    this.subscription = this.boardService.boardChanged.subscribe(
-      (tasks: Tasks) => {
+    this.subscription.add(
+      this.boardService.boardChanged.subscribe((tasks: Tasks) => {
         this.tasks = tasks;
-      }
+      })
     );
   }
 
   drop(event: CdkDragDrop<Task[]>) {
     const updatedTask = event.previousContainer.data[event.previousIndex];
-    updatedTask.status = event.container.id;
+
+    updatedTask.status = event.container.element.nativeElement.dataset[
+      'status'
+    ] as string;
 
     this.dataStorageService.updateTask(updatedTask).subscribe();
 
-    const elementId = parseInt(event.item.element.nativeElement.id);
+    const elementId = +event.item.element.nativeElement.dataset['id']!;
     const sortedNumberArray = this.sortObjectsById(event.container.data);
     const newPosition = this.insertAndReturnIndex(sortedNumberArray, elementId);
 
@@ -54,7 +59,10 @@ export class BoardComponent implements OnInit {
   }
 
   allowDrop(item: CdkDrag<number>) {
-    return item.dropContainer.id === 'IN_PROGRESS';
+    return (
+      item.dropContainer.element.nativeElement.dataset['status'] ===
+      taskStatus.DOING
+    );
   }
 
   dragEntered(event: CdkDragEnter<[]>) {
@@ -63,7 +71,7 @@ export class BoardComponent implements OnInit {
     );
 
     const parent = detachElement?.parentNode;
-    const elementId = parseInt(event.item.element.nativeElement.id);
+    const elementId = +event.item.element.nativeElement.dataset['id']!;
     const sortedNumberArray = this.sortObjectsById(event.container.data);
     const newPosition = this.insertAndReturnIndex(sortedNumberArray, elementId);
 
@@ -101,5 +109,9 @@ export class BoardComponent implements OnInit {
     }
 
     return left;
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }

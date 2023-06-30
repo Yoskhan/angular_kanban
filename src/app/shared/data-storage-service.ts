@@ -5,6 +5,7 @@ import { BoardService } from '../board/board-service';
 import { Task, Tasks } from '../board/tasks.model';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
+import { Status as taskStatus } from '../board/tasks.model';
 
 @Injectable({
   providedIn: 'root',
@@ -73,11 +74,11 @@ export class DataStorageService implements OnInit, OnDestroy {
 
     for (const task of data.data) {
       const status = task.status;
-      if (status === 'TODO') {
+      if (status === taskStatus.TODO) {
         tasks.todo.push(task);
-      } else if (status === 'IN_PROGRESS') {
+      } else if (status === taskStatus.DOING) {
         tasks.doing.push(task);
-      } else if (status === 'DONE') {
+      } else if (status === taskStatus.DONE) {
         tasks.done.push(task);
       }
     }

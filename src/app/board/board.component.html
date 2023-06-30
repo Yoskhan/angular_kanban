@@ -8,7 +8,7 @@
     </div>
 
     <div
-      id="TODO"
+      [attr.data-status]="taskStats.TODO"
       cdkDropList
       #todoList="cdkDropList"
       cdkDropListSortingDisabled
@@ -20,13 +20,11 @@
       <div
         class="task"
         *ngFor="let item of tasks.todo"
-        [id]="item.id"
+        [attr.data-id]="item.id"
         cdkDrag
         (cdkDragEntered)="dragEntered($event)"
       >
-        <div class="example-custom-placeholder" *cdkDragPlaceholder>
-          - Drop Here -
-        </div>
+        <div *cdkDragPlaceholder>- Drop Here -</div>
         {{ item.name }}
       </div>
     </div>
@@ -36,7 +34,7 @@
     <h2>Doing</h2>
 
     <div
-      id="IN_PROGRESS"
+      [attr.data-status]="taskStats.DOING"
       cdkDropList
       #doingList="cdkDropList"
       cdkDropListSortingDisabled
@@ -48,13 +46,11 @@
       <div
         class="task"
         *ngFor="let item of tasks.doing"
-        [id]="item.id"
+        [attr.data-id]="item.id"
         cdkDrag
         (cdkDragEntered)="dragEntered($event)"
       >
-        <div class="example-custom-placeholder" *cdkDragPlaceholder>
-          - Drop Here -
-        </div>
+        <div *cdkDragPlaceholder>- Drop Here -</div>
         {{ item.name }}
       </div>
     </div>
@@ -64,7 +60,7 @@
     <h2>Done</h2>
 
     <div
-      id="DONE"
+      [attr.data-status]="taskStats.DONE"
       cdkDropList
       #doneList="cdkDropList"
       cdkDropListSortingDisabled
@@ -77,13 +73,11 @@
       <div
         class="task"
         *ngFor="let item of tasks.done"
-        [id]="item.id"
+        [attr.data-id]="item.id"
         cdkDrag
         (cdkDragEntered)="dragEntered($event)"
       >
-        <div class="example-custom-placeholder" *cdkDragPlaceholder>
-          - Drop Here -
-        </div>
+        <div *cdkDragPlaceholder>- Drop Here -</div>
         {{ item.name }}
       </div>
     </div>

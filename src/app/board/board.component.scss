@@ -1,39 +1,41 @@
 .board {
   width: 90%;
   margin: 0 auto;
+
+  .todo-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    h2 {
+      margin-bottom: 10px;
+    }
+  }
+
+  .row-container {
+    width: 29%;
+    max-width: 100%;
+    margin: 0 25px 25px 0;
+    display: inline-block;
+    vertical-align: top;
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .list {
+      border: solid 1px #ccc;
+      min-height: 60px;
+      background: white;
+      border-radius: 4px;
+      overflow: hidden;
+      display: block;
+    }
+  }
 }
 
-.todo-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.todo-header h2 {
-  margin-bottom: 10px;
-}
-
-.row-container {
-  width: 29%;
-  max-width: 100%;
-  margin: 0 25px 25px 0;
-  display: inline-block;
-  vertical-align: top;
-}
-
-.row-container h2 {
-  margin-bottom: 10px;
-}
-
-.list {
-  border: solid 1px #ccc;
-  min-height: 60px;
-  background: white;
-  border-radius: 4px;
-  overflow: hidden;
-  display: block;
-}
-
+// .task class should be nested in .list but since cdkDragAndDrop feature pulls it out of the DOM
+// and makes it direct child of body once its dragged, we need to put it here
 .task {
   padding: 20px 10px;
   border-bottom: solid 1px #ccc;
@@ -46,10 +48,10 @@
   cursor: move;
   background: white;
   font-size: 14px;
-}
 
-.task:last-child {
-  border: none;
+  &:last-child {
+    border: none;
+  }
 }
 
 .cdk-drag-animating {

@@ -1,3 +1,9 @@
+export enum Status {
+  TODO = 'TODO',
+  DOING = 'IN_PROGRESS',
+  DONE = 'DONE',
+}
+
 export type Task = {
   id: number;
   reporter: string;

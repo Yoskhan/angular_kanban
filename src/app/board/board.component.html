@@ -1,1 +1,91 @@
-<p>board works!</p>
+<div class="board" cdkDropListGroup>
+  <div class="row-container">
+    <div class="todo-header">
+      <h2>To do</h2>
+      <button type="button" mat-mini-fab>
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <div
+      id="TODO"
+      cdkDropList
+      #todoList="cdkDropList"
+      cdkDropListSortingDisabled
+      [cdkDropListData]="tasks.todo"
+      [cdkDropListConnectedTo]="[doneList, doingList]"
+      class="list"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div
+        class="task"
+        *ngFor="let item of tasks.todo"
+        [id]="item.id"
+        cdkDrag
+        (cdkDragEntered)="dragEntered($event)"
+      >
+        <div class="example-custom-placeholder" *cdkDragPlaceholder>
+          - Drop Here -
+        </div>
+        {{ item.name }}
+      </div>
+    </div>
+  </div>
+
+  <div class="row-container">
+    <h2>Doing</h2>
+
+    <div
+      id="IN_PROGRESS"
+      cdkDropList
+      #doingList="cdkDropList"
+      cdkDropListSortingDisabled
+      [cdkDropListData]="tasks.doing"
+      [cdkDropListConnectedTo]="[todoList, doneList]"
+      class="list"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div
+        class="task"
+        *ngFor="let item of tasks.doing"
+        [id]="item.id"
+        cdkDrag
+        (cdkDragEntered)="dragEntered($event)"
+      >
+        <div class="example-custom-placeholder" *cdkDragPlaceholder>
+          - Drop Here -
+        </div>
+        {{ item.name }}
+      </div>
+    </div>
+  </div>
+
+  <div class="row-container">
+    <h2>Done</h2>
+
+    <div
+      id="DONE"
+      cdkDropList
+      #doneList="cdkDropList"
+      cdkDropListSortingDisabled
+      [cdkDropListData]="tasks.done"
+      [cdkDropListConnectedTo]="[todoList, doingList]"
+      [cdkDropListEnterPredicate]="allowDrop"
+      class="list"
+      (cdkDropListDropped)="drop($event)"
+    >
+      <div
+        class="task"
+        *ngFor="let item of tasks.done"
+        [id]="item.id"
+        cdkDrag
+        (cdkDragEntered)="dragEntered($event)"
+      >
+        <div class="example-custom-placeholder" *cdkDragPlaceholder>
+          - Drop Here -
+        </div>
+        {{ item.name }}
+      </div>
+    </div>
+  </div>
+</div>

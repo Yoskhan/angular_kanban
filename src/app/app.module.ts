@@ -8,11 +8,11 @@ import { AppComponent } from './app.component';
 import { AuthModule } from './auth/auth.module';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BoardComponent } from './board/board.component';
+import { BoardModule } from './board/board.module';
 import { HeaderComponent } from './header/header.component';
 
 @NgModule({
-  declarations: [AppComponent, BoardComponent, HeaderComponent],
+  declarations: [AppComponent, HeaderComponent],
   imports: [
     BrowserModule,
     CommonModule,
@@ -21,6 +21,7 @@ import { HeaderComponent } from './header/header.component';
     AuthModule,
     NoopAnimationsModule,
     ReactiveFormsModule,
+    BoardModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

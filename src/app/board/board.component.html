@@ -1,8 +1,14 @@
+<app-add-new-task
+  [message]="'abc'"
+  *ngIf="modalOpened"
+  (close)="closeModal()"
+></app-add-new-task>
+
 <div class="board" cdkDropListGroup>
   <div class="row-container">
     <div class="todo-header">
       <h2>To do</h2>
-      <button type="button" mat-mini-fab>
+      <button type="button" mat-mini-fab (click)="openModal()">
         <mat-icon>add</mat-icon>
       </button>
     </div>

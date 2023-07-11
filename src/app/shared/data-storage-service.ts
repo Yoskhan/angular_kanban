@@ -1,57 +1,56 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
-import { Subscription, exhaustMap, map, take, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, exhaustMap, map, take, tap } from 'rxjs';
 import { BoardService } from '../board/board-service';
 import { Task, Tasks } from '../board/tasks.model';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
-import { Status as taskStatus } from '../board/tasks.model';
+import { Users } from '../board/users.model';
+import { Tags } from '../board/tags.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DataStorageService implements OnInit, OnDestroy {
-  private userSub$!: Subscription;
-  private authToken = '';
-
+export class DataStorageService {
   constructor(
     private http: HttpClient,
     private boardService: BoardService,
     private authService: AuthService
   ) {}
 
-  ngOnInit(): void {}
   fetchBoard() {
-    return this.authService.user.pipe(
-      take(1), // Take only the first emission from the user observable
-      exhaustMap((user) => {
-        this.authToken = user?.token || '';
-
-        const headers = new HttpHeaders({
-          Authorization: `Bearer ${this.authToken}`,
-        });
-
-        return this.http.get<Tasks>(`${environment.API_URL}/tasks`, {
+    return this.withAuthToken().pipe(
+      exhaustMap((headers) => {
+        return this.http.get<{ data: Task[] }>(`${environment.API_URL}/tasks`, {
           headers,
         });
       }),
-      map((tasks) => this.sortTasksByStatus(tasks)),
-      tap((tasks) => {
+      tap(({ data: tasks }) => {
         this.boardService.setBoard(tasks);
       })
     );
   }
 
+  createTask(task: Task) {
+    return this.withAuthToken().pipe(
+      exhaustMap((headers) => {
+        let newTask = task;
+        newTask.status = 'TODO';
+
+        return this.http.post<{ data: Task }>(
+          `${environment.API_URL}/task`,
+          task,
+          {
+            headers,
+          }
+        );
+      })
+    );
+  }
+
   updateTask(task: Task) {
-    return this.authService.user.pipe(
-      take(1),
-      exhaustMap((user) => {
-        this.authToken = user?.token || '';
-
-        const headers = new HttpHeaders({
-          Authorization: `Bearer ${this.authToken}`,
-        });
-
+    return this.withAuthToken().pipe(
+      exhaustMap((headers) => {
         return this.http.put<Tasks>(
           `${environment.API_URL}/task/${task.id}`,
           task,
@@ -61,28 +60,42 @@ export class DataStorageService implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    this.userSub$.unsubscribe();
+  fetchUsers() {
+    return this.withAuthToken().pipe(
+      exhaustMap((headers) => {
+        return this.http.get<{ data: Users }>(`${environment.API_URL}/users`, {
+          headers,
+        });
+      }),
+      tap(({ data }) => {
+        this.boardService.setUsers(data);
+      })
+    );
   }
 
-  private sortTasksByStatus(data: any) {
-    const tasks: Tasks = {
-      todo: [],
-      doing: [],
-      done: [],
-    };
+  fetchTags() {
+    return this.withAuthToken().pipe(
+      exhaustMap((headers) => {
+        return this.http.get<{ data: Tags }>(`${environment.API_URL}/tags`, {
+          headers,
+        });
+      }),
+      tap(({ data }) => {
+        this.boardService.setTags(data);
+      })
+    );
+  }
 
-    for (const task of data.data) {
-      const status = task.status;
-      if (status === taskStatus.TODO) {
-        tasks.todo.push(task);
-      } else if (status === taskStatus.DOING) {
-        tasks.doing.push(task);
-      } else if (status === taskStatus.DONE) {
-        tasks.done.push(task);
-      }
-    }
-
-    return tasks;
+  private withAuthToken(): Observable<HttpHeaders> {
+    return this.authService.user.pipe(
+      take(1),
+      map((user) => {
+        const authToken = user?.token || '';
+        const headers = new HttpHeaders({
+          Authorization: `Bearer ${authToken}`,
+        });
+        return headers;
+      })
+    );
   }
 }

@@ -86,7 +86,7 @@ export class AuthService {
     const loadedUser = new User(
       userData.username,
       userData._token,
-      userData.id
+      userData.id,
     );
 
     if (loadedUser.token) {

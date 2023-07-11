@@ -1,20 +1,50 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { Tasks } from './tasks.model';
+import { Task } from './tasks.model';
+import { Users } from './users.model';
+import { Tags } from './tags.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BoardService {
   boardChanged = new Subject<any>();
-  private tasks: Tasks | [] = [];
+  usersChanged = new Subject<Users>();
+  tagsChanged = new Subject<Tags>();
 
-  setBoard(tasks: Tasks) {
+  private tasks: Task[] = [];
+  private users: Users | [] = [];
+  private tags: Tags | [] = [];
+
+  setBoard(tasks: Task[]) {
     this.tasks = tasks;
-    this.boardChanged.next({ ...this.tasks });
+    this.boardChanged.next([...this.tasks]);
   }
 
   getBoard() {
     return { ...this.tasks };
+  }
+
+  getTask(id: number) {
+    console.log(this.tasks);
+  }
+
+  setTask(task: Task) {
+    this.tasks.push(task);
+    this.boardChanged.next([...this.tasks]);
+  }
+
+  setUsers(users: Users) {
+    this.users = users;
+    this.usersChanged.next([...this.users]);
+  }
+
+  getAllUsers() {
+    return { ...this.users };
+  }
+
+  setTags(tags: Tags) {
+    this.tags = tags;
+    this.tagsChanged.next([...this.tags]);
   }
 }

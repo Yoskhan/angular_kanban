@@ -6,8 +6,8 @@ export enum Status {
 
 export type Task = {
   id: number;
-  reporter: string;
-  assignee: string | null;
+  reporter?: string;
+  assignee: string;
   name: string;
   description: string;
   status: string;

@@ -11,6 +11,7 @@ import { BoardService } from './board-service';
 import { Task, Tasks } from './tasks.model';
 import { Subscription } from 'rxjs';
 import { Status as taskStatus } from './tasks.model';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-board',
@@ -20,21 +21,58 @@ import { Status as taskStatus } from './tasks.model';
 export class BoardComponent implements OnInit, OnDestroy {
   tasks: Tasks = { todo: [], doing: [], done: [] };
   taskStats = taskStatus;
+  modalOpened = false;
   private subscription: Subscription = new Subscription();
 
   constructor(
     private dataStorageService: DataStorageService,
-    private boardService: BoardService
+    private boardService: BoardService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    this.activateModalOnRouteChange();
+
     this.dataStorageService.fetchBoard().subscribe();
 
     this.subscription.add(
-      this.boardService.boardChanged.subscribe((tasks: Tasks) => {
-        this.tasks = tasks;
+      this.boardService.boardChanged.subscribe((tasks: Task[]) => {
+        this.tasks = this.sortTasksByStatus(tasks);
       })
     );
+  }
+
+  private sortTasksByStatus(data: Task[]) {
+    const tasks: Tasks = {
+      todo: [],
+      doing: [],
+      done: [],
+    };
+
+    for (const key in data) {
+      const status = data[key].status;
+
+      if (status === taskStatus.TODO) {
+        tasks.todo.push(data[key]);
+      } else if (status === taskStatus.DOING) {
+        tasks.doing.push(data[key]);
+      } else if (status === taskStatus.DONE) {
+        tasks.done.push(data[key]);
+      }
+    }
+
+    return tasks;
+  }
+
+  closeModal() {
+    this.router.navigate(['/board']);
+    this.modalOpened = false;
+  }
+
+  openModal() {
+    this.router.navigate(['/board/create-new']);
+    this.modalOpened = true;
   }
 
   drop(event: CdkDragDrop<Task[]>) {
@@ -77,7 +115,6 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     if (detachElement) {
       parent?.removeChild(detachElement);
-
       parent?.insertBefore(detachElement, parent?.children[newPosition]);
     }
   }
@@ -109,6 +146,23 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     return left;
+  }
+
+  private activateModalOnRouteChange() {
+    this.modalOpened =
+      this.route.snapshot.firstChild?.url[0]?.path === 'create-new'
+        ? true
+        : false;
+
+    // This part is needed if a user goes to the route '/board/create-new'
+    // using back button in browser (& mobile)
+    this.subscription.add(
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.modalOpened = event.url.includes('create-new') ? true : false;
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {

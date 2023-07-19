@@ -45,7 +45,11 @@ export class AuthComponent implements OnDestroy {
 
     this.subscription = authObs.subscribe(
       (resData) => {
-        this.router.navigate(['./board']);
+        this.authService.user.subscribe((user) => {
+          if (user) {
+            this.router.navigate(['./board']);
+          }
+        });
       },
       (errorMessage) => {
         this.error = errorMessage.error.error;

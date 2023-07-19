@@ -25,12 +25,20 @@ export class BoardService {
     return { ...this.tasks };
   }
 
-  getTask(id: number) {
-    console.log(this.tasks);
+  getTask(id: number): Task | undefined {
+    return this.tasks.find((task) => {
+      return task.id === id;
+    });
   }
 
   setTask(task: Task) {
     this.tasks.push(task);
+    this.boardChanged.next([...this.tasks]);
+  }
+
+  updateTask(newTask: Task) {
+    const foundIndex = this.tasks.findIndex((task) => task.id === newTask.id);
+    this.tasks[foundIndex] = newTask;
     this.boardChanged.next([...this.tasks]);
   }
 

@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, exhaustMap, map, take, tap } from 'rxjs';
 import { BoardService } from '../board/board-service';
-import { Task, Tasks } from '../board/tasks.model';
+import { Task } from '../board/tasks.model';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
 import { Users } from '../board/users.model';
@@ -51,7 +51,7 @@ export class DataStorageService {
   updateTask(task: Task) {
     return this.withAuthToken().pipe(
       exhaustMap((headers) => {
-        return this.http.put<Tasks>(
+        return this.http.put<{ data: Task }>(
           `${environment.API_URL}/task/${task.id}`,
           task,
           { headers }

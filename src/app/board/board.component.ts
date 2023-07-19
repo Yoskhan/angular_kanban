@@ -11,7 +11,7 @@ import { BoardService } from './board-service';
 import { Task, Tasks } from './tasks.model';
 import { Subscription } from 'rxjs';
 import { Status as taskStatus } from './tasks.model';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-board',
@@ -21,7 +21,8 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 export class BoardComponent implements OnInit, OnDestroy {
   tasks: Tasks = { todo: [], doing: [], done: [] };
   taskStats = taskStatus;
-  modalOpened = false;
+  id?: number;
+  editMode = false;
   private subscription: Subscription = new Subscription();
 
   constructor(
@@ -32,8 +33,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.activateModalOnRouteChange();
-
     this.dataStorageService.fetchBoard().subscribe();
 
     this.subscription.add(
@@ -67,12 +66,14 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   closeModal() {
     this.router.navigate(['/board']);
-    this.modalOpened = false;
   }
 
-  openModal() {
-    this.router.navigate(['/board/create-new']);
-    this.modalOpened = true;
+  openModal(id?: number) {
+    if (!id) {
+      this.router.navigate(['/board/create-new']);
+    } else {
+      this.router.navigate(['/board/' + id]);
+    }
   }
 
   drop(event: CdkDragDrop<Task[]>) {
@@ -148,22 +149,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     return left;
   }
 
-  private activateModalOnRouteChange() {
-    this.modalOpened =
-      this.route.snapshot.firstChild?.url[0]?.path === 'create-new'
-        ? true
-        : false;
-
-    // This part is needed if a user goes to the route '/board/create-new'
-    // using back button in browser (& mobile)
-    this.subscription.add(
-      this.router.events.subscribe((event) => {
-        if (event instanceof NavigationEnd) {
-          this.modalOpened = event.url.includes('create-new') ? true : false;
-        }
-      })
-    );
-  }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();

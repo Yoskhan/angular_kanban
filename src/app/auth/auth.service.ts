@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 
 import { User } from './user.model';
 import { environment } from 'src/environments/environment';
-import { Tasks } from '../board/tasks.model';
 
 export interface AuthResponseData {
   data: {

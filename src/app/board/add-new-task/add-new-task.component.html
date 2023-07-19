@@ -33,7 +33,14 @@
       <mat-form-field>
         <mat-label>Select Tasks That Blocks This Task</mat-label>
         <mat-select formControlName="blockedBy" multiple>
-          <mat-option *ngFor="let task of tasks" [value]="task.id">{{task.id}} - {{ task.name }}</mat-option>
+          <mat-option *ngFor="let task of tasks" [value]="task.id">{{ task.id }} - {{ task.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="this.editMode">
+        <mat-label>Switch To Column</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let stat of status" [value]="stat.id">{{ stat.title }}</mat-option>
         </mat-select>
       </mat-form-field>
 

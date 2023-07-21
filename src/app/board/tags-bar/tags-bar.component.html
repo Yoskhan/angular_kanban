@@ -1,0 +1,14 @@
+<div class="container" fxLayout="row" fxLayoutGap="3px">
+  <div
+    [fxFlex]="item['percentage']"
+    [class]="item['name']"
+    *ngFor="let item of tagsPercentages"
+  ></div>
+</div>
+
+<div class="legends-container">
+  <div class="legend-container" *ngFor="let tag of tags">
+    <div [class]="tag['name']" class="legend"></div>
+    <div>{{ tag["name"] }}</div>
+  </div>
+</div>

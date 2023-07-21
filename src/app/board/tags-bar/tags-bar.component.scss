@@ -1,0 +1,49 @@
+.container {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 30px;
+  padding-bottom: 30px;
+
+  div {
+    text-align: center;
+    height: 20px;
+  }
+}
+
+.legends-container {
+  width: 80%;
+  margin: 0 auto;
+  padding-bottom: 30px;
+  display: flex;
+
+  .legend-container {
+    width: 200px;
+    display: flex;
+  }
+
+  .legend {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+  }
+}
+
+.bug {
+  background-color: #4ec19e;
+}
+
+.feature {
+  background-color: #ff7156;
+}
+
+.backend {
+  background-color: black;
+}
+
+.frontend {
+  background-color: #5672ff;
+}
+
+.system {
+  background-color: #e2d450;
+}

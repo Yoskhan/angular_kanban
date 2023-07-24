@@ -14,6 +14,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import {
   CdkDragPlaceholder,
@@ -21,9 +22,10 @@ import {
   CdkDrag,
 } from '@angular/cdk/drag-drop';
 import { AddNewTaskComponent } from './add-new-task/add-new-task.component';
+import { TagsBarComponent } from './tags-bar/tags-bar.component';
 
 @NgModule({
-  declarations: [BoardComponent, AddNewTaskComponent],
+  declarations: [BoardComponent, AddNewTaskComponent, TagsBarComponent],
   imports: [
     CommonModule,
     RouterModule,
@@ -41,6 +43,7 @@ import { AddNewTaskComponent } from './add-new-task/add-new-task.component';
     MatSelectModule,
     MatCardModule,
     MatCheckboxModule,
+    FlexLayoutModule
   ],
   exports: [BoardComponent],
 })

@@ -65,11 +65,11 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
 
   private loadData() {
     this.subscription.add(this.dataStorageService.fetchUsers().subscribe((resData)=>{},(error)=>{
-      this.snackbarService.showErrorMessage("Something went wrong");
+      this.snackbarService.showErrorMessage('Something went wrong');
       this.onClose();
     }));
     this.subscription.add(this.dataStorageService.fetchTags().subscribe((resData)=>{},(error)=>{
-      this.snackbarService.showErrorMessage("Something went wrong");
+      this.snackbarService.showErrorMessage('Something went wrong');
       this.onClose();
     }));
     this.subscription.add(
@@ -137,7 +137,7 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
             this.onClose();
             this.snackbarService.showSuccessMessage("Task updated successfully");
           },(error)=>{
-            this.snackbarService.showErrorMessage("Something went wrong");
+            this.snackbarService.showErrorMessage('Something went wrong');
             this.onClose();
           });
       } else {
@@ -151,7 +151,7 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
             this.onClose();
             this.snackbarService.showSuccessMessage("Task created successfully");
           }, (error)=>{
-            this.snackbarService.showErrorMessage("Something went wrong");
+            this.snackbarService.showErrorMessage('Something went wrong');
             this.onClose();
           });
       }

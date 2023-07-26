@@ -2,7 +2,12 @@
   (close)="closeModal()"
 ></router-outlet>
 
-<div class="board" cdkDropListGroup>
+<div *ngIf="isLoading" class="loading-spinner">
+  <app-loading-spinner></app-loading-spinner>
+  <div>Loading...</div>
+</div>
+
+<div class="board" cdkDropListGroup *ngIf="!isLoading">
   <div class="row-container">
     <div class="todo-header">
       <h2>To do</h2>

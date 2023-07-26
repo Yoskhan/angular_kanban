@@ -11,7 +11,8 @@ import { BoardService } from './board-service';
 import { Task, Tasks } from './tasks.model';
 import { Subscription } from 'rxjs';
 import { Status as taskStatus } from './tasks.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { SnackbarService } from '../shared/snackbar-service';
 
 @Component({
   selector: 'app-board',
@@ -23,17 +24,26 @@ export class BoardComponent implements OnInit, OnDestroy {
   taskStats = taskStatus;
   id?: number;
   editMode = false;
+  isLoading = true;
   private subscription: Subscription = new Subscription();
 
   constructor(
     private dataStorageService: DataStorageService,
     private boardService: BoardService,
     private router: Router,
-    private route: ActivatedRoute
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit(): void {
-    this.dataStorageService.fetchBoard().subscribe();
+    this.dataStorageService.fetchBoard().subscribe(
+      (resData) => {
+        this.isLoading = false;
+      },
+      (errMessage) => {
+        this.snackbarService.showErrorMessage('Something went wrong');
+        this.isLoading = false;
+      }
+    );
 
     this.subscription.add(
       this.boardService.boardChanged.subscribe((tasks: Task[]) => {

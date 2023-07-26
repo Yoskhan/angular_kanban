@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BoardComponent } from './board.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { SharedModule } from '../shared/shared.module';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
@@ -43,7 +44,8 @@ import { TagsBarComponent } from './tags-bar/tags-bar.component';
     MatSelectModule,
     MatCardModule,
     MatCheckboxModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    SharedModule,
   ],
   exports: [BoardComponent],
 })

@@ -10,6 +10,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BoardModule } from './board/board.module';
 import { HeaderComponent } from './header/header.component';
+import { SharedModule } from './shared/shared.module';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -22,6 +24,8 @@ import { HeaderComponent } from './header/header.component';
     NoopAnimationsModule,
     ReactiveFormsModule,
     BoardModule,
+    SharedModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

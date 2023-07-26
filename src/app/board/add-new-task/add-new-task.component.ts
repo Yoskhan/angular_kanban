@@ -15,6 +15,7 @@ import { Tag } from '../tags.model';
 import { Task } from '../tasks.model';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { SnackbarService } from 'src/app/shared/snackbar-service';
 
 @Component({
   selector: 'app-add-new-task',
@@ -45,6 +46,7 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
     private boardService: BoardService,
     private route: ActivatedRoute,
     private router: Router,
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -62,8 +64,14 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
   }
 
   private loadData() {
-    this.subscription.add(this.dataStorageService.fetchUsers().subscribe());
-    this.subscription.add(this.dataStorageService.fetchTags().subscribe());
+    this.subscription.add(this.dataStorageService.fetchUsers().subscribe((resData)=>{},(error)=>{
+      this.snackbarService.showErrorMessage('Something went wrong');
+      this.onClose();
+    }));
+    this.subscription.add(this.dataStorageService.fetchTags().subscribe((resData)=>{},(error)=>{
+      this.snackbarService.showErrorMessage('Something went wrong');
+      this.onClose();
+    }));
     this.subscription.add(
       this.dataStorageService.fetchBoard().subscribe(({ data }) => {
         // We need to reinitialize form because of the bug
@@ -127,6 +135,10 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
           .subscribe(({ data }) => {
             this.boardService.updateTask(data);
             this.onClose();
+            this.snackbarService.showSuccessMessage("Task updated successfully");
+          },(error)=>{
+            this.snackbarService.showErrorMessage('Something went wrong');
+            this.onClose();
           });
       } else {
         // When creating new Task Id property should not be in object
@@ -136,6 +148,10 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
           .createTask(this.myForm.value)
           .subscribe(({ data }) => {
             this.boardService.setTask(data);
+            this.onClose();
+            this.snackbarService.showSuccessMessage("Task created successfully");
+          }, (error)=>{
+            this.snackbarService.showErrorMessage('Something went wrong');
             this.onClose();
           });
       }

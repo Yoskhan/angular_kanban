@@ -1,0 +1,23 @@
+@import "@angular/material/theming";
+
+// Copy colour palettes individually
+$app-primary: mat-palette($mat-purple);
+$app-gray-background: mat-palette($mat-gray, 200);
+$app-accent: mat-palette($mat-deep-purple);
+
+$app-bug-color: mat-palette($mat-deep-orange);
+$app-feature: mat-palette($mat-green);
+$app-backend: mat-palette($mat-gray, 900);
+$app-frontend: mat-palette($mat-blue);
+$app-system: mat-palette($mat-yellow, 700);
+
+// Create variables to use in project
+$primary: mat-color($app-primary);
+$gray-background: mat-color($app-gray-background);
+$accent: mat-color($app-accent);
+
+$bug: mat-color($app-bug-color);
+$feature: mat-color($app-feature);
+$backend: mat-color($app-backend);
+$frontend: mat-color($app-frontend);
+$system: mat-color($app-system);

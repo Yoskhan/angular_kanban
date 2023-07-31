@@ -1,49 +1,60 @@
-.container {
-  width: 80%;
-  margin: 0 auto;
-  margin-top: 30px;
-  padding-bottom: 30px;
+@import "../../../variables.scss";
 
-  div {
-    text-align: center;
-    height: 20px;
+.tags-bar-background {
+  width: 100%;
+  background-color: $gray-background;
+  position: fixed;
+  bottom: 0;
+  padding: 5px 0;
+
+  .container {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 15px;
+    padding-bottom: 20px;
+
+    div {
+      text-align: center;
+      height: 5px;
+    }
   }
-}
 
-.legends-container {
-  width: 80%;
-  margin: 0 auto;
-  padding-bottom: 30px;
-  display: flex;
-
-  .legend-container {
-    width: 200px;
+  .legends-container {
+    width: 80%;
+    margin: 0 auto;
+    padding-bottom: 10px;
     display: flex;
-  }
 
-  .legend {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+    .legend-container {
+      width: 200px;
+      display: flex;
+      align-items: center;
+    }
+
+    .legend {
+      width: 15px;
+      height: 15px;
+      margin-right: 10px;
+    }
   }
 }
 
 .bug {
-  background-color: #4ec19e;
+  background-color: $bug;
 }
 
 .feature {
-  background-color: #ff7156;
+  background-color: $feature;
 }
 
 .backend {
-  background-color: black;
+  background-color: $backend;
 }
 
 .frontend {
-  background-color: #5672ff;
+  background-color: $frontend;
 }
 
 .system {
-  background-color: #e2d450;
+  background-color: $system;
 }

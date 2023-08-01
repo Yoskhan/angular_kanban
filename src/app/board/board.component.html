@@ -1,96 +1,107 @@
-<router-outlet
-  (close)="closeModal()"
-></router-outlet>
+<router-outlet (close)="closeModal()"></router-outlet>
 
 <div *ngIf="isLoading" class="loading-spinner">
   <app-loading-spinner></app-loading-spinner>
   <div>Loading...</div>
 </div>
+<div class="board-container">
+  <div class="board" cdkDropListGroup *ngIf="!isLoading">
+    <div class="row-container">
+      <div class="todo-header">
+        <h2>To do</h2>
+        <button
+          type="button"
+          mat-flat-button
+          (click)="openModal()"
+          color="accent"
+        >
+          <mat-icon>add</mat-icon>
+          <span>Add New Task</span>
+        </button>
+      </div>
 
-<div class="board" cdkDropListGroup *ngIf="!isLoading">
-  <div class="row-container">
-    <div class="todo-header">
-      <h2>To do</h2>
-      <button type="button" mat-mini-fab (click)="openModal()">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-
-    <div
-      [attr.data-status]="taskStats.TODO"
-      cdkDropList
-      #todoList="cdkDropList"
-      cdkDropListSortingDisabled
-      [cdkDropListData]="tasks.todo"
-      [cdkDropListConnectedTo]="[doneList, doingList]"
-      class="list"
-      (cdkDropListDropped)="drop($event)"
-    >
       <div
-        class="task"
-        *ngFor="let item of tasks.todo"
-        [attr.data-id]="item.id"
-        cdkDrag
-        (cdkDragEntered)="dragEntered($event)"
-        (click)="openModal(item.id)"
+        [attr.data-status]="taskStats.TODO"
+        cdkDropList
+        #todoList="cdkDropList"
+        cdkDropListSortingDisabled
+        [cdkDropListData]="tasks.todo"
+        [cdkDropListConnectedTo]="[doneList, doingList]"
+        class="list"
+        (cdkDropListDropped)="drop($event)"
       >
-        <div *cdkDragPlaceholder>- Drop Here -</div>
-        {{ item.name }}
+        <app-task
+          class="task"
+          *ngFor="let item of tasks.todo"
+          [task]="item"
+          [attr.data-id]="item.id"
+          [isDragging]="isDragging"
+          cdkDrag
+          (cdkDragEntered)="dragEntered($event)"
+          (click)="openModal(item.id)"
+        >
+          <div *cdkDragPlaceholder>- Drop Here -</div>
+          {{ item.name }}
+        </app-task>
       </div>
     </div>
-  </div>
 
-  <div class="row-container">
-    <h2>Doing</h2>
+    <div class="row-container">
+      <h2>Doing</h2>
 
-    <div
-      [attr.data-status]="taskStats.DOING"
-      cdkDropList
-      #doingList="cdkDropList"
-      cdkDropListSortingDisabled
-      [cdkDropListData]="tasks.doing"
-      [cdkDropListConnectedTo]="[todoList, doneList]"
-      class="list"
-      (cdkDropListDropped)="drop($event)"
-    >
       <div
-        class="task"
-        *ngFor="let item of tasks.doing"
-        [attr.data-id]="item.id"
-        cdkDrag
-        (cdkDragEntered)="dragEntered($event)"
-        (click)="openModal(item.id)"
+        [attr.data-status]="taskStats.DOING"
+        cdkDropList
+        #doingList="cdkDropList"
+        cdkDropListSortingDisabled
+        [cdkDropListData]="tasks.doing"
+        [cdkDropListConnectedTo]="[todoList, doneList]"
+        class="list"
+        (cdkDropListDropped)="drop($event)"
       >
-        <div *cdkDragPlaceholder>- Drop Here -</div>
-        {{ item.name }}
+        <app-task
+          class="task"
+          *ngFor="let item of tasks.doing"
+          [task]="item"
+          [attr.data-id]="item.id"
+          [isDragging]="isDragging"
+          cdkDrag
+          (cdkDragEntered)="dragEntered($event)"
+          (click)="openModal(item.id)"
+        >
+          <div *cdkDragPlaceholder>- Drop Here -</div>
+          {{ item.name }}
+        </app-task>
       </div>
     </div>
-  </div>
 
-  <div class="row-container">
-    <h2>Done</h2>
+    <div class="row-container">
+      <h2>Done</h2>
 
-    <div
-      [attr.data-status]="taskStats.DONE"
-      cdkDropList
-      #doneList="cdkDropList"
-      cdkDropListSortingDisabled
-      [cdkDropListData]="tasks.done"
-      [cdkDropListConnectedTo]="[todoList, doingList]"
-      [cdkDropListEnterPredicate]="allowDrop"
-      class="list"
-      (cdkDropListDropped)="drop($event)"
-    >
       <div
-        class="task"
-        *ngFor="let item of tasks.done"
-        [attr.data-id]="item.id"
-        cdkDrag
-        (cdkDragEntered)="dragEntered($event)"
-        (click)="openModal(item.id)"
+        [attr.data-status]="taskStats.DONE"
+        cdkDropList
+        #doneList="cdkDropList"
+        cdkDropListSortingDisabled
+        [cdkDropListData]="tasks.done"
+        [cdkDropListConnectedTo]="[todoList, doingList]"
+        [cdkDropListEnterPredicate]="allowDrop"
+        class="list"
+        (cdkDropListDropped)="drop($event)"
       >
-        <div *cdkDragPlaceholder>- Drop Here -</div>
-        {{ item.name }}
+        <app-task
+          class="task"
+          *ngFor="let item of tasks.done"
+          [task]="item"
+          [attr.data-id]="item.id"
+          [isDragging]="isDragging"
+          cdkDrag
+          (cdkDragEntered)="dragEntered($event)"
+          (click)="openModal(item.id)"
+        >
+          <div *cdkDragPlaceholder>- Drop Here -</div>
+          {{ item.name }}
+        </app-task>
       </div>
     </div>
   </div>

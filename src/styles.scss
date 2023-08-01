@@ -7,6 +7,7 @@ body {
 }
 body {
   margin: 0;
+  overflow: hidden;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
@@ -23,4 +24,15 @@ body {
     --mdc-snackbar-supporting-text-color: #fff;
     --mat-mdc-snack-bar-action-color: #fff;
   }
+}
+
+/* Styles for animating Snackbar */
+.mat-mdc-snack-bar-container {
+  transform: translateY(100%);
+  transition: transform 300ms ease-out;
+}
+
+/* Define the animation when the Snackbar enters the screen */
+.mat-mdc-snack-bar-container.ng-enter {
+  transform: translateY(100%);
 }

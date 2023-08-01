@@ -5,7 +5,7 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Output } from '@angular/core';
 import { DataStorageService } from '../shared/data-storage-service';
 import { BoardService } from './board-service';
 import { Task, Tasks } from './tasks.model';
@@ -25,6 +25,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   id?: number;
   editMode = false;
   isLoading = true;
+  @Output() isDragging = false;
   private subscription: Subscription = new Subscription();
 
   constructor(
@@ -105,6 +106,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       event.previousIndex,
       newPosition
     );
+
+    this.isDragging = false;
   }
 
   allowDrop(item: CdkDrag<number>) {
@@ -115,6 +118,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   dragEntered(event: CdkDragEnter<[]>) {
+    this.isDragging = true;
     const detachElement = event.container.element.nativeElement.querySelector(
       '.cdk-drag-placeholder'
     );
@@ -158,7 +162,6 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     return left;
   }
-
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();

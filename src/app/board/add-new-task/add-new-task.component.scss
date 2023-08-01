@@ -5,14 +5,21 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.75);
-  z-index: 50;
+  z-index: 100;
 }
 
 .create-new-task {
-  position: fixed;
-  top: 15vh;
-  left: 25vw;
+  .header {
+    margin-bottom: 10px;
+  }
+
+  position: absolute;
+  float: left;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 50vw;
+  max-width: 550px;
   padding: 16px;
   z-index: 100;
   background: white;

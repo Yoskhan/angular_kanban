@@ -1,7 +1,8 @@
 <div class="backdrop" (click)="onClose()"></div>
 <mat-card class="create-new-task">
-  <mat-card-header>
-    <mat-card-title>Create New Task</mat-card-title>
+  <mat-card-header class="header">
+    <mat-card-title *ngIf="!editMode">Create New Task</mat-card-title>
+    <mat-card-title *ngIf="editMode">Update New Task</mat-card-title>
   </mat-card-header>
 
   <mat-card-content>
@@ -37,7 +38,7 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field *ngIf="this.editMode">
+      <mat-form-field *ngIf="editMode">
         <mat-label>Switch To Column</mat-label>
         <mat-select formControlName="status">
           <mat-option *ngFor="let stat of status" [value]="stat.id">{{ stat.title }}</mat-option>

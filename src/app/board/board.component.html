@@ -9,7 +9,12 @@
     <div class="row-container">
       <div class="todo-header">
         <h2>To do</h2>
-        <button type="button" mat-flat-button (click)="openModal()" color="accent">
+        <button
+          type="button"
+          mat-flat-button
+          (click)="openModal()"
+          color="accent"
+        >
           <mat-icon>add</mat-icon>
           <span>Add New Task</span>
         </button>
@@ -25,17 +30,19 @@
         class="list"
         (cdkDropListDropped)="drop($event)"
       >
-        <div
+        <app-task
           class="task"
           *ngFor="let item of tasks.todo"
+          [task]="item"
           [attr.data-id]="item.id"
+          [isDragging]="isDragging"
           cdkDrag
           (cdkDragEntered)="dragEntered($event)"
           (click)="openModal(item.id)"
         >
           <div *cdkDragPlaceholder>- Drop Here -</div>
           {{ item.name }}
-        </div>
+        </app-task>
       </div>
     </div>
 
@@ -52,17 +59,19 @@
         class="list"
         (cdkDropListDropped)="drop($event)"
       >
-        <div
+        <app-task
           class="task"
           *ngFor="let item of tasks.doing"
+          [task]="item"
           [attr.data-id]="item.id"
+          [isDragging]="isDragging"
           cdkDrag
           (cdkDragEntered)="dragEntered($event)"
           (click)="openModal(item.id)"
         >
           <div *cdkDragPlaceholder>- Drop Here -</div>
           {{ item.name }}
-        </div>
+        </app-task>
       </div>
     </div>
 
@@ -80,17 +89,19 @@
         class="list"
         (cdkDropListDropped)="drop($event)"
       >
-        <div
+        <app-task
           class="task"
           *ngFor="let item of tasks.done"
+          [task]="item"
           [attr.data-id]="item.id"
+          [isDragging]="isDragging"
           cdkDrag
           (cdkDragEntered)="dragEntered($event)"
           (click)="openModal(item.id)"
         >
           <div *cdkDragPlaceholder>- Drop Here -</div>
           {{ item.name }}
-        </div>
+        </app-task>
       </div>
     </div>
   </div>

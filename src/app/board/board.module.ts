@@ -24,9 +24,10 @@ import {
 } from '@angular/cdk/drag-drop';
 import { AddNewTaskComponent } from './add-new-task/add-new-task.component';
 import { TagsBarComponent } from './tags-bar/tags-bar.component';
+import { TaskComponent } from './task/task.component';
 
 @NgModule({
-  declarations: [BoardComponent, AddNewTaskComponent, TagsBarComponent],
+  declarations: [BoardComponent, AddNewTaskComponent, TagsBarComponent, TaskComponent],
   imports: [
     CommonModule,
     RouterModule,

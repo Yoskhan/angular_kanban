@@ -1,0 +1,13 @@
+<mat-card class="task-card" [ngClass]="{'dragging': isDragging}">
+  <mat-card-header>
+    <mat-card-title>{{ task.name }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p class="description">{{ task.description }}</p>
+  </mat-card-content>
+  <mat-card-footer>
+    <div class="tags-container">
+      <div *ngFor="let tag of tags" [class]="tag" class="tag"></div>
+    </div>
+  </mat-card-footer>
+</mat-card>

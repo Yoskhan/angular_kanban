@@ -1,0 +1,50 @@
+@import "../../../variables.scss";
+
+.task-card {
+  width: 100%;
+  border: 2px solid transparent;
+
+  &:hover:not(.dragging) {
+    border: 2px solid $accent;
+    padding: 2px;
+    margin: -2px;
+  }
+
+  .description {
+    background-color: $gray-background;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .tags-container {
+    display: flex;
+    padding: 10px 15px;
+
+    .tag {
+      width: 25px;
+      height: 10px;
+      border-radius: 6px;
+      margin-right: 5px;
+    }
+  }
+}
+
+.bug {
+  background-color: $bug;
+}
+
+.feature {
+  background-color: $feature;
+}
+
+.backend {
+  background-color: $backend;
+}
+
+.frontend {
+  background-color: $frontend;
+}
+
+.system {
+  background-color: $system;
+}

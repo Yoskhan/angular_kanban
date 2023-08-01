@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Task } from './tasks.model';
 import { Users } from './users.model';
-import { Tags } from './tags.model';
+import { Tag, Tags } from './tags.model';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +28,12 @@ export class BoardService {
   getTask(id: number): Task | undefined {
     return this.tasks.find((task) => {
       return task.id === id;
+    });
+  }
+
+  getTag(id: number): Tag | undefined {
+    return this.tags.find((tag) => {
+      return tag.id === id;
     });
   }
 

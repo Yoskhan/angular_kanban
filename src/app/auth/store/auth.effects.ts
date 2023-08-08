@@ -40,65 +40,61 @@ export class AuthEffects {
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private router: Router,
+    private router: Router
   ) {}
 
   authLogin = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.loginStart),
-      switchMap((authData) => {
-        return this.http
+      switchMap((authData) =>
+        this.http
           .post<AuthResponseData>(`${environment.API_URL}/signin`, {
             username: authData.payload.username,
             password: authData.payload.password,
           })
           .pipe(
-            switchMap((resData) => {
-              return this.getUserId(resData.data.token).pipe(
-                map((userData) => {
-                  return handleAuthentication(
+            switchMap((resData) =>
+              this.getUserId(resData.data.token).pipe(
+                map((userData) =>
+                  handleAuthentication(
                     authData.payload.username,
                     resData.data.token,
                     userData.data.id
-                  );
-                })
-              );
-            }),
-            catchError((errorMessage) => {
-              return handleError(errorMessage);
-            })
-          );
-      })
+                  )
+                )
+              )
+            ),
+            catchError((errorMessage) => handleError(errorMessage))
+          )
+      )
     )
   );
 
   authSignup = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.signupStart),
-      switchMap((signupAction) => {
-        return this.http
+      switchMap((signupAction) =>
+        this.http
           .post(`${environment.API_URL}/signup`, {
             username: signupAction.payload.username,
             name: signupAction.payload.username,
             password: signupAction.payload.password,
           })
           .pipe(
-            switchMap((resData: any) => {
-              return this.getUserId(resData.data.token).pipe(
-                map((userData) => {
-                  return handleAuthentication(
+            switchMap((resData: any) =>
+              this.getUserId(resData.data.token).pipe(
+                map((userData) =>
+                  handleAuthentication(
                     signupAction.payload.username,
                     resData.data.token,
                     userData.data.id
-                  );
-                })
-              );
-            }),
-            catchError((errorMessage) => {
-              return handleError(errorMessage);
-            })
-          );
-      })
+                  )
+                )
+              )
+            ),
+            catchError((errorMessage) => handleError(errorMessage))
+          )
+      )
     )
   );
 

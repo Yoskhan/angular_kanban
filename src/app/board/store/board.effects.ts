@@ -36,51 +36,41 @@ export class BoardEffects {
   fetchTasks = createEffect(() =>
     this.actions$.pipe(
       ofType(BoardActions.fetchTasks),
-      switchMap(() => {
-        return this.withAuthToken();
-      }),
-      exhaustMap((headers) => {
-        return this.http
+      switchMap(() => this.withAuthToken()),
+      exhaustMap((headers) =>
+        this.http
           .get<{ data: Task[] }>(`${environment.API_URL}/tasks`, {
             headers,
           })
           .pipe(
-            map(({ data: tasks }) => {
-              return BoardActions.setTasks({ tasks });
-            }),
-            catchError(() => {
-              this.snackbarService.showErrorMessage('Something went wrong!');
-
-              return of(BoardActions.fetchFailed());
-            })
-          );
-      })
+            map(({ data: tasks }) => BoardActions.setTasks({ tasks })),
+            catchError(() => this.handleError())
+          )
+      )
     )
   );
 
   updateTask = createEffect(() =>
     this.actions$.pipe(
       ofType(BoardActions.updateTask),
-      switchMap(({ task }) => {
-        return this.withAuthToken().pipe(
-          exhaustMap((headers) => {
-            return this.http
+      switchMap(({ task }) =>
+        this.withAuthToken().pipe(
+          exhaustMap((headers) =>
+            this.http
               .put<{ data: Task }>(
                 `${environment.API_URL}/task/${task.id}`,
                 task,
                 { headers }
               )
               .pipe(
-                map(({ data: updatedTask }) => {
-                  return BoardActions.taskUpdated({ task: updatedTask });
-                }),
-                catchError(() => {
-                  return this.handleError();
-                })
-              );
-          })
-        );
-      })
+                map(({ data: updatedTask }) =>
+                  BoardActions.taskUpdated({ task: updatedTask })
+                ),
+                catchError(() => this.handleError())
+              )
+          )
+        )
+      )
     )
   );
 
@@ -99,24 +89,22 @@ export class BoardEffects {
   addTask = createEffect(() =>
     this.actions$.pipe(
       ofType(BoardActions.addTask),
-      switchMap(({ task }) => {
-        return this.withAuthToken().pipe(
-          exhaustMap((headers) => {
-            return this.http
+      switchMap(({ task }) =>
+        this.withAuthToken().pipe(
+          exhaustMap((headers) =>
+            this.http
               .post<{ data: Task }>(`${environment.API_URL}/task`, task, {
                 headers,
               })
               .pipe(
-                map(({ data: addedTask }) => {
-                  return BoardActions.taskAdded({ task: addedTask });
-                }),
-                catchError(() => {
-                  return this.handleError();
-                })
-              );
-          })
-        );
-      })
+                map(({ data: addedTask }) =>
+                  BoardActions.taskAdded({ task: addedTask })
+                ),
+                catchError(() => this.handleError())
+              )
+          )
+        )
+      )
     )
   );
 
@@ -135,46 +123,34 @@ export class BoardEffects {
   fetchUsers = createEffect(() =>
     this.actions$.pipe(
       ofType(BoardActions.fetchUsers),
-      switchMap(() => {
-        return this.withAuthToken();
-      }),
-      exhaustMap((headers) => {
-        return this.http
+      switchMap(() => this.withAuthToken()),
+      exhaustMap((headers) =>
+        this.http
           .get<{ data: Users }>(`${environment.API_URL}/users`, {
             headers,
           })
           .pipe(
-            map(({ data: users }) => {
-              return BoardActions.setUsers({ users });
-            }),
-            catchError(() => {
-              return this.handleError();
-            })
-          );
-      })
+            map(({ data: users }) => BoardActions.setUsers({ users })),
+            catchError(() => this.handleError())
+          )
+      )
     )
   );
 
   fetchTags = createEffect(() =>
     this.actions$.pipe(
       ofType(BoardActions.fetchTags),
-      switchMap(() => {
-        return this.withAuthToken();
-      }),
-      exhaustMap((headers) => {
-        return this.http
+      switchMap(() => this.withAuthToken()),
+      exhaustMap((headers) =>
+        this.http
           .get<{ data: Tags }>(`${environment.API_URL}/tags`, {
             headers,
           })
           .pipe(
-            map(({ data: tags }) => {
-              return BoardActions.setTags({ tags });
-            }),
-            catchError(() => {
-              return this.handleError();
-            })
-          );
-      })
+            map(({ data: tags }) => BoardActions.setTags({ tags })),
+            catchError(() => this.handleError())
+          )
+      )
     )
   );
 

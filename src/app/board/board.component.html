@@ -1,11 +1,13 @@
 <router-outlet (close)="closeModal()"></router-outlet>
 
-<div *ngIf="isLoading" class="loading-spinner">
+<div>{{ isLoading$ | async }}</div>
+
+<div *ngIf="isLoading$ | async" class="loading-spinner">
   <app-loading-spinner></app-loading-spinner>
   <div>Loading...</div>
 </div>
-<div class="board-container">
-  <div class="board" cdkDropListGroup *ngIf="!isLoading">
+<div class="board-container" *ngIf="!(isLoading$ | async)">
+  <div class="board" cdkDropListGroup>
     <div class="row-container">
       <div class="todo-header">
         <h2>To do</h2>

@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { DataStorageService } from 'src/app/shared/data-storage-service';
-import { BoardService } from '../board-service';
-import { Task } from '../tasks.model';
+import { Store } from '@ngrx/store';
 
-type TagPercentage = {
-  [key: string]: number;
-};
+import { Task } from '../tasks.model';
+import * as FromApp from '../../store/app.reducer';
+import * as BoardActions from '../store/board.actions';
+import * as BoardSelectors from '../store/board.selectors';
+import { Tag } from '../tags.model';
+
+type TagPercentage = { name: string; percentage: number }[];
 
 @Component({
   selector: 'app-tags-bar',
@@ -14,51 +16,35 @@ type TagPercentage = {
   styleUrls: ['./tags-bar.component.scss'],
 })
 export class TagsBarComponent implements OnInit {
-  tags: TagPercentage[] = [];
-  tagsPercentages: TagPercentage[] = [];
+  tags: Tag[] = [];
+  tagsPercentages: TagPercentage = [];
   tasks: Task[] = [];
 
   private subscription: Subscription = new Subscription();
-  constructor(
-    private dataStorageService: DataStorageService,
-    private boardService: BoardService
-  ) {}
+  constructor(private store: Store<FromApp.AppState>) {}
 
   ngOnInit(): void {
-    this.subscribeToBoardChanges();
-    this.subscribeToTagsChanges();
-  }
+    this.store.dispatch(BoardActions.fetchTags());
 
-  private subscribeToBoardChanges(): void {
     this.subscription.add(
-      this.boardService.boardChanged.subscribe((tasks: Task[]) => {
+      this.store.select(BoardSelectors.selectTasks).subscribe((tasks: Task[]) => {
         this.tasks = tasks;
-        this.fetchTags();
       })
-    );
-  }
+    )
 
-  private fetchTags(): void {
     this.subscription.add(
-      this.dataStorageService.fetchTags().subscribe(() => {})
-    );
-  }
-
-  private subscribeToTagsChanges(): void {
-    this.subscription.add(
-      this.boardService.tagsChanged.subscribe((tags: any) => {
+      this.store.select(BoardSelectors.selectTags).subscribe((tags: Tag[]) => {
         this.tags = tags;
         this.tagsPercentages = this.calculateTagPercentage();
       })
-    );
+    )
   }
 
-  private calculateTagPercentage(): TagPercentage[] {
+  private calculateTagPercentage(): TagPercentage {
     const tagCount: any = {};
-    const tasks: Task[] = this.tasks;
 
     // Count the occurrences of each tag
-    tasks.forEach((task) => {
+    this.tasks.forEach((task) => {
       task.tags.forEach((tag) => {
         if (tagCount[tag] !== undefined) {
           tagCount[tag]++;
@@ -69,7 +55,7 @@ export class TagsBarComponent implements OnInit {
     });
 
     // Calculate the total number of tags
-    const totalTags = tasks.reduce(
+    const totalTags = this.tasks.reduce(
       (total, task) => total + task.tags.length,
       0
     );
@@ -84,7 +70,7 @@ export class TagsBarComponent implements OnInit {
     }
 
     const tagNames = this.tags;
-    const tagPercentageArray: TagPercentage[] = [];
+    const tagPercentageArray: TagPercentage = [];
 
     // Convert tagPercentage object into an array of objects
     for (const mapping of tagNames) {

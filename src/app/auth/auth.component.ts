@@ -1,22 +1,34 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthResponseData, AuthService } from './auth.service';
-import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import * as FromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
 
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent implements OnDestroy {
+export class AuthComponent implements OnInit, OnDestroy {
   hidePassword = true;
   hideConfirmPassword = true;
   isLoginMode = true;
-  error = '';
-  subscription!: Subscription;
+  error: string | null = '';
+  subscription = new Subscription();
+  isLoading = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private store: Store<FromApp.AppState>) {}
+
+  ngOnInit(): void {
+    this.subscription.add(
+      this.store.select('auth').subscribe((authState) => {
+        this.isLoading = authState.loading;
+        this.error = authState.authError;
+      })
+    );
+  }
 
   model = {
     username: '',
@@ -29,37 +41,30 @@ export class AuthComponent implements OnDestroy {
       return;
     }
 
-    let authObs: Observable<AuthResponseData>;
-
     if (this.isLoginMode) {
-      authObs = this.authService.login(
-        form.value.username,
-        this.model.password
+      this.store.dispatch(
+        AuthActions.loginStart({
+          payload: {
+            username: form.value.username,
+            password: this.model.password,
+          },
+        })
       );
     } else {
-      authObs = this.authService.signup(
-        this.model.username,
-        this.model.password
+      this.store.dispatch(
+        AuthActions.signupStart({
+          payload: {
+            username: form.value.username,
+            password: this.model.password,
+          },
+        })
       );
     }
-
-    this.subscription = authObs.subscribe(
-      (resData) => {
-        this.authService.user.subscribe((user) => {
-          if (user) {
-            this.router.navigate(['./board']);
-          }
-        });
-      },
-      (errorMessage) => {
-        this.error = errorMessage.error.error;
-      }
-    );
   }
 
   onSwitchMode(form: NgForm) {
     this.isLoginMode = !this.isLoginMode;
-    this.error = '';
+    this.store.dispatch(AuthActions.clearError());
     form.reset();
   }
 

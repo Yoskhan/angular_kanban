@@ -6,16 +6,19 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DataStorageService } from 'src/app/shared/data-storage-service';
-import { BoardService } from '../board-service';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+
 import { Status as taskStatus } from '../tasks.model';
 import { User } from '../users.model';
 import { Tag } from '../tags.model';
 import { Task } from '../tasks.model';
-import { Subscription } from 'rxjs';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { SnackbarService } from 'src/app/shared/snackbar-service';
+
+import * as fromApp from '../../store/app.reducer';
+import * as BoardActions from '../store/board.actions';
+import * as BoardSelectors from '../store/board.selectors';
 
 @Component({
   selector: 'app-add-new-task',
@@ -42,11 +45,9 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private dataStorageService: DataStorageService,
-    private boardService: BoardService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackbarService: SnackbarService
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit() {
@@ -58,62 +59,46 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.loadData();
+    this.store.dispatch(BoardActions.fetchUsers());
     this.subscribeToChanges();
     this.initForm();
   }
 
-  private loadData() {
-    this.subscription.add(this.dataStorageService.fetchUsers().subscribe((resData)=>{},(error)=>{
-      this.snackbarService.showErrorMessage('Something went wrong');
-      this.onClose();
-    }));
-    this.subscription.add(this.dataStorageService.fetchTags().subscribe((resData)=>{},(error)=>{
-      this.snackbarService.showErrorMessage('Something went wrong');
-      this.onClose();
-    }));
-    this.subscription.add(
-      this.dataStorageService.fetchBoard().subscribe(({ data }) => {
-        // We need to reinitialize form because of the bug
-        // causing Form to not be initialized on reload of the page "/board/id"
-        this.initForm();
-      })
-    );
-  }
-
   private subscribeToChanges() {
     this.subscription.add(
-      this.boardService.usersChanged.subscribe((users: any) => {
+      this.store.select(BoardSelectors.selectUsers).subscribe((users: User[]) => {
         this.users = users;
       })
     );
 
     this.subscription.add(
-      this.boardService.tagsChanged.subscribe((tags: any) => {
+      this.store.select(BoardSelectors.selectTags).subscribe((tags: Tag[]) => {
         this.tags = tags;
       })
     );
 
     this.subscription.add(
-      this.boardService.boardChanged.subscribe((tasks: any) => {
+      this.store.select(BoardSelectors.selectTasks).subscribe((tasks: Task[]) => {
         this.tasks = tasks;
       })
     );
   }
 
-  private initForm() {
+  private initForm = () => {
     if (this.editMode && this.id) {
-      const task = this.boardService.getTask(this.id);
-
-      this.myForm = this.formBuilder.group({
-        name: [task?.name, Validators.required],
-        description: [task?.description, Validators.required],
-        tags: [task?.tags],
-        assignee: [task?.assignee, Validators.required],
-        blockedBy: [task?.blockedBy],
-        id: [task?.id],
-        status: [task?.status],
-      });
+      this.store
+        .select(BoardSelectors.selectTaskById(this.id))
+        .subscribe((task) => {
+          this.myForm = this.formBuilder.group({
+            name: [task?.name, Validators.required],
+            description: [task?.description, Validators.required],
+            tags: [task?.tags],
+            assignee: [task?.assignee, Validators.required],
+            blockedBy: [task?.blockedBy],
+            id: [task?.id],
+            status: [task?.status],
+          });
+        });
     } else {
       this.myForm = this.formBuilder.group({
         name: ['', Validators.required],
@@ -122,38 +107,22 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
         assignee: ['', Validators.required],
         blockedBy: [[]],
         id: [],
-        status: [[]],
+        status: ['TODO'],
       });
     }
-  }
+  };
 
   submitForm() {
     if (this.myForm.valid) {
       if (this.editMode) {
-        this.dataStorageService
-          .updateTask(this.myForm.value)
-          .subscribe(({ data }) => {
-            this.boardService.updateTask(data);
-            this.onClose();
-            this.snackbarService.showSuccessMessage("Task updated successfully");
-          },(error)=>{
-            this.snackbarService.showErrorMessage('Something went wrong');
-            this.onClose();
-          });
+        this.store.dispatch(
+          BoardActions.updateTask({ task: this.myForm.value })
+        );
       } else {
         // When creating new Task Id property should not be in object
+        // that is requirement from backend, and it will add id automatically
         delete this.myForm.value.id;
-
-        this.dataStorageService
-          .createTask(this.myForm.value)
-          .subscribe(({ data }) => {
-            this.boardService.setTask(data);
-            this.onClose();
-            this.snackbarService.showSuccessMessage("Task created successfully");
-          }, (error)=>{
-            this.snackbarService.showErrorMessage('Something went wrong');
-            this.onClose();
-          });
+        this.store.dispatch(BoardActions.addTask({ task: this.myForm.value }));
       }
     } else {
       // Form is invalid, show error messages

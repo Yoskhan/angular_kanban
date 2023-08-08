@@ -6,13 +6,15 @@ import {
 } from '@angular/cdk/drag-drop';
 
 import { Component, OnDestroy, OnInit, Output } from '@angular/core';
-import { DataStorageService } from '../shared/data-storage-service';
-import { BoardService } from './board-service';
-import { Task, Tasks } from './tasks.model';
-import { Subscription } from 'rxjs';
-import { Status as taskStatus } from './tasks.model';
+import { Observable, Subscription, map } from 'rxjs';
 import { Router } from '@angular/router';
-import { SnackbarService } from '../shared/snackbar-service';
+import { Store } from '@ngrx/store';
+
+import { Task, Tasks } from './tasks.model';
+import { Status as taskStatus } from './tasks.model';
+import * as fromApp from '../store/app.reducer';
+import * as BoardSelectors from './store/board.selectors';
+import * as BoardActions from './store/board.actions';
 
 @Component({
   selector: 'app-board',
@@ -24,36 +26,34 @@ export class BoardComponent implements OnInit, OnDestroy {
   taskStats = taskStatus;
   id?: number;
   editMode = false;
-  isLoading = true;
+  isLoading$ = new Observable<boolean>();
   @Output() isDragging = false;
   private subscription: Subscription = new Subscription();
 
   constructor(
-    private dataStorageService: DataStorageService,
-    private boardService: BoardService,
     private router: Router,
-    private snackbarService: SnackbarService
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit(): void {
-    this.dataStorageService.fetchBoard().subscribe(
-      (resData) => {
-        this.isLoading = false;
-      },
-      (errMessage) => {
-        this.snackbarService.showErrorMessage('Something went wrong');
-        this.isLoading = false;
-      }
-    );
 
-    this.subscription.add(
-      this.boardService.boardChanged.subscribe((tasks: Task[]) => {
-        this.tasks = this.sortTasksByStatus(tasks);
-      })
-    );
+    this.store.dispatch(BoardActions.fetchTasks());
+
+    this.store
+      .select(BoardSelectors.selectTasks)
+      .pipe(
+        map((tasks: Task[]) => {
+          return this.sortTasksByStatus(tasks);
+        })
+      )
+      .subscribe((tasks: Tasks) => {
+        this.tasks = tasks;
+      });
+
+      this.isLoading$ = this.store.select(BoardSelectors.selectBoardIsLoading);
   }
 
-  private sortTasksByStatus(data: Task[]) {
+  private sortTasksByStatus(data: Task[]): Tasks {
     const tasks: Tasks = {
       todo: [],
       doing: [],
@@ -88,13 +88,16 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   drop(event: CdkDragDrop<Task[]>) {
-    const updatedTask = event.previousContainer.data[event.previousIndex];
+    const updatedTask = {
+      ...event.previousContainer.data[event.previousIndex],
+    };
 
-    updatedTask.status = event.container.element.nativeElement.dataset[
+    const newStatus = event.container.element.nativeElement.dataset[
       'status'
     ] as string;
 
-    this.dataStorageService.updateTask(updatedTask).subscribe();
+    updatedTask.status = newStatus;
+    this.store.dispatch(BoardActions.updateTask({ task: updatedTask }));
 
     const elementId = +event.item.element.nativeElement.dataset['id']!;
     const sortedNumberArray = this.sortObjectsById(event.container.data);

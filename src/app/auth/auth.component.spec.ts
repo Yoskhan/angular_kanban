@@ -54,6 +54,28 @@ describe('AuthComponent', () => {
     expect(component.isLoading).toBeFalse();
   });
 
+  it('should contain input fields for username and password', () => {
+    const usernameInput = fixture.debugElement.nativeElement.querySelector('#username');
+    const passwordInput = fixture.debugElement.nativeElement.querySelector('#password');
+
+    expect(usernameInput).toBeTruthy();
+    expect(passwordInput).toBeTruthy();
+  });
+
+  it('should contain a login button', () => {
+    const loginButton = fixture.debugElement.nativeElement.querySelector('.login-btn');
+    expect(loginButton.textContent).toContain('Login');
+  });
+
+  it('should contain a signup button after switching to signup mode', () => {
+    // Switch to signup mode
+    component.isLoginMode = false;
+    fixture.detectChanges();
+
+    const signupButton = fixture.debugElement.nativeElement.querySelector('.login-btn');
+    expect(signupButton.textContent).toContain('Sign Up');
+  });
+
   it('should dispatch loginStart action when form is submitted in login mode', () => {
     const dispatchSpy = spyOn(component['store'], 'dispatch');
     component.isLoginMode = true;

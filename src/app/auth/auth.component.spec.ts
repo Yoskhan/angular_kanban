@@ -63,7 +63,7 @@ describe('AuthComponent', () => {
   });
 
   it('should contain a login button', () => {
-    const loginButton = fixture.debugElement.nativeElement.querySelector('.login-btn');
+    const loginButton = fixture.debugElement.nativeElement.querySelector('.login-register-btn');
     expect(loginButton.textContent).toContain('Login');
   });
 
@@ -72,7 +72,7 @@ describe('AuthComponent', () => {
     component.isLoginMode = false;
     fixture.detectChanges();
 
-    const signupButton = fixture.debugElement.nativeElement.querySelector('.login-btn');
+    const signupButton = fixture.debugElement.nativeElement.querySelector('.login-register-btn');
     expect(signupButton.textContent).toContain('Sign Up');
   });
 

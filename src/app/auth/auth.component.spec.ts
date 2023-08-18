@@ -55,15 +55,19 @@ describe('AuthComponent', () => {
   });
 
   it('should contain input fields for username and password', () => {
-    const usernameInput = fixture.debugElement.nativeElement.querySelector('#username');
-    const passwordInput = fixture.debugElement.nativeElement.querySelector('#password');
+    const usernameInput =
+      fixture.debugElement.nativeElement.querySelector('#username');
+    const passwordInput =
+      fixture.debugElement.nativeElement.querySelector('#password');
 
     expect(usernameInput).toBeTruthy();
     expect(passwordInput).toBeTruthy();
   });
 
   it('should contain a login button', () => {
-    const loginButton = fixture.debugElement.nativeElement.querySelector('.login-register-btn');
+    const loginButton = fixture.debugElement.nativeElement.querySelector(
+      '.login-register-btn'
+    );
     expect(loginButton.textContent).toContain('Login');
   });
 
@@ -72,7 +76,9 @@ describe('AuthComponent', () => {
     component.isLoginMode = false;
     fixture.detectChanges();
 
-    const signupButton = fixture.debugElement.nativeElement.querySelector('.login-register-btn');
+    const signupButton = fixture.debugElement.nativeElement.querySelector(
+      '.login-register-btn'
+    );
     expect(signupButton.textContent).toContain('Sign Up');
   });
 
@@ -101,6 +107,20 @@ describe('AuthComponent', () => {
         },
       })
     );
+  });
+
+  it('should show error message when login fails', () => {
+    const error = 'Login failed';
+
+    const action = AuthActions.authenticateFail({ payload: error });
+    component['store'].dispatch(action);
+
+    fixture.detectChanges();
+
+    const errorMessage = fixture.nativeElement.querySelector(
+      '.auth-form__errorMessage'
+    );
+    expect(errorMessage.textContent).toContain(component.error);
   });
 
   it('should switch authentication mode and clear error when switch mode is clicked', () => {

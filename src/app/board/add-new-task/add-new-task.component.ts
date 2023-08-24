@@ -59,6 +59,16 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.myForm = this.formBuilder.group({
+      name: ['', Validators.required],
+      description: ['', Validators.required],
+      tags: [[]],
+      assignee: ['', Validators.required],
+      blockedBy: [[]],
+      id: [],
+      status: ['TODO'],
+    });
+
     this.store.dispatch(BoardActions.fetchUsers());
     this.subscribeToChanges();
     this.initForm();

@@ -30,7 +30,7 @@ const handleAuthentication = (username: string, token: string, id?: string) => {
 const handleError = (errorMessage: any) => {
   return of(
     AuthActions.authenticateFail({
-      payload: errorMessage.error.error,
+      payload: errorMessage.error.error || errorMessage.message,
     })
   );
 };

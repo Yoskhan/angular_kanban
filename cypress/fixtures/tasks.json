@@ -1,0 +1,94 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "reporter": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "assignee": "f33a440f-c18f-4d62-a6d8-25411d937cfa",
+      "name": "Develop User Registration Feature",
+      "description": "Implement user registration with email verification.",
+      "status": "IN_PROGRESS",
+      "tags": [1, 2, 5],
+      "blockedBy": []
+    },
+    {
+      "id": 2,
+      "reporter": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "assignee": "f33a440f-c18f-4d62-a6d8-25411d937cfa",
+      "name": "Fix UI Bug on Homepage",
+      "description": "The homepage layout is broken on smaller screens.",
+      "status": "DONE",
+      "tags": [2, 5],
+      "blockedBy": [4]
+    },
+    {
+      "id": 3,
+      "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "name": "Refactor Database Schema",
+      "description": "Optimize the database schema for improved performance.",
+      "tags": [4,3],
+      "blockedBy": [],
+      "status": "DONE"
+    },
+    {
+      "id": 4,
+      "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "name": "Update Homepage Content",
+      "description": "Update text and images on the homepage.",
+      "tags": [2],
+      "blockedBy": [],
+      "status": "TODO"
+    },
+    {
+      "id": 5,
+      "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "name": "Implement Payment Gateway",
+      "description": "Integrate a third-party payment gateway for online payments.",
+      "tags": [1,3],
+      "blockedBy": [3],
+      "status": "TODO"
+    },
+    {
+      "id": 6,
+      "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "name": "Review Test Cases",
+      "description": "Review and approve test cases for the upcoming release.",
+      "tags": [1, 2],
+      "blockedBy": [],
+      "status": "TODO"
+    },
+    {
+      "id": 7,
+      "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "name": "Prepare Quarterly Report",
+      "description": "Compile financial data and create a report for the quarterly meeting.",
+      "tags": [3],
+      "blockedBy": [],
+      "status": "TODO"
+    },
+    {
+      "id": 8,
+      "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "name": "Optimize Image Loading",
+      "description": "Improve image loading performance on the website.",
+      "tags": [1],
+      "blockedBy": [],
+      "status": "IN_PROGRESS"
+    },
+    {
+      "id": 9,
+      "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "assignee": "880e54b7-c3fc-49cc-9582-de7542207759",
+      "name": "Security Audit",
+      "description": "Conduct a security audit to identify vulnerabilities.",
+      "tags": [2, 3],
+      "blockedBy": [],
+      "status": "IN_PROGRESS"
+    }
+  ]
+}

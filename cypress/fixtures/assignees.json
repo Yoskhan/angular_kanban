@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "id": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+      "username": "steve",
+      "name": "Steve Wozniak"
+    },
+    {
+      "id": "f33a440f-c18f-4d62-a6d8-25411d937cfa",
+      "username": "linus",
+      "name": "Linus Torvalds"
+    },
+    {
+      "id": "42c167a5-59d7-4a9c-80b3-460176183cf7",
+      "username": "dennis",
+      "name": "Dennis Ritchie"
+    },
+    {
+      "id": "fbd52ec5-04b1-4a8d-9250-352a1d936725",
+      "username": "bill",
+      "name": "Bill Gates"
+    },
+    {
+      "id": "be242def-1aa6-455f-9660-437413b5969b",
+      "username": "mark",
+      "name": "Mark Zuckerburg"
+    },
+    {
+      "id": "1c947a26-7e47-4046-a75c-4fc2626747cc",
+      "username": "josip",
+      "name": "Mark Zuckerburg"
+    }
+  ]
+}

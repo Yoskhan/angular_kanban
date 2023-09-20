@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": 10,
+    "reporter": "880e54b7-c3fc-49cc-9582-de7542207759",
+    "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
+    "name": "New Task Name",
+    "description": "New Task Description",
+    "tags": [],
+    "blockedBy": [],
+    "status": "TODO"
+  }
+}

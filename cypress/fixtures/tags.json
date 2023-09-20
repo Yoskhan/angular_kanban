@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "bug"
+    },
+    {
+      "id": 2,
+      "name": "feature"
+    },
+    {
+      "id": 3,
+      "name": "backend"
+    },
+    {
+      "id": 4,
+      "name": "frontend"
+    },
+    {
+      "id": 5,
+      "name": "system"
+    }
+  ]
+}

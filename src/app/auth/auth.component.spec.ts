@@ -1,46 +1,42 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { StoreModule } from '@ngrx/store';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+
+import { AuthModule } from './auth.module';
 import { AuthComponent } from './auth.component';
-import * as FromApp from '../store/app.reducer';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { ValidateEqualModule } from 'ng-validate-equal';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as AuthActions from './store/auth.actions';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 describe('AuthComponent', () => {
   let component: AuthComponent;
   let fixture: ComponentFixture<AuthComponent>;
+  let store: MockStore;
+  let el: DebugElement;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(waitForAsync(() => {
+    const initialState = {
+      auth: {
+        user: null,
+        authError: null,
+        loading: false,
+      },
+    };
+
+    TestBed.configureTestingModule({
       declarations: [AuthComponent],
-      imports: [
-        CommonModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        FormsModule,
-        MatIconModule,
-        MatButtonModule,
-        ValidateEqualModule,
-        ReactiveFormsModule,
-        FormsModule,
-        BrowserAnimationsModule,
-        StoreModule.forRoot(FromApp.appReducer),
-      ],
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AuthComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+      imports: [AuthModule, NoopAnimationsModule],
+      providers: [provideMockStore({ initialState })],
+    })
+      .compileComponents()
+      .then(() => {
+        fixture = TestBed.createComponent(AuthComponent);
+        component = fixture.componentInstance;
+        store = TestBed.inject(MockStore);
+        el = fixture.debugElement;
+        fixture.detectChanges();
+      });
+  }));
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
@@ -55,20 +51,16 @@ describe('AuthComponent', () => {
   });
 
   it('should contain input fields for username and password', () => {
-    const usernameInput =
-      fixture.debugElement.nativeElement.querySelector('#username');
-    const passwordInput =
-      fixture.debugElement.nativeElement.querySelector('#password');
+    const usernameInput = el.query(By.css('#username'));
+    const passwordInput = el.query(By.css('#password'));
 
     expect(usernameInput).toBeTruthy();
     expect(passwordInput).toBeTruthy();
   });
 
   it('should contain a login button', () => {
-    const loginButton = fixture.debugElement.nativeElement.querySelector(
-      '.login-register-btn'
-    );
-    expect(loginButton.textContent).toContain('Login');
+    const loginButton = el.query(By.css('.login-register-btn'));
+    expect(loginButton.nativeElement.textContent).toContain('Login');
   });
 
   it('should contain a signup button after switching to signup mode', () => {
@@ -76,10 +68,8 @@ describe('AuthComponent', () => {
     component.isLoginMode = false;
     fixture.detectChanges();
 
-    const signupButton = fixture.debugElement.nativeElement.querySelector(
-      '.login-register-btn'
-    );
-    expect(signupButton.textContent).toContain('Sign Up');
+    const signupButton = el.query(By.css('.login-register-btn'));
+    expect(signupButton.nativeElement.textContent).toContain('Sign Up');
   });
 
   it('should dispatch loginStart action when form is submitted in login mode', () => {
@@ -110,17 +100,13 @@ describe('AuthComponent', () => {
   });
 
   it('should show error message when login fails', () => {
-    const error = 'Login failed';
-
-    const action = AuthActions.authenticateFail({ payload: error });
-    component['store'].dispatch(action);
+    component.error = 'Login failed';
 
     fixture.detectChanges();
 
-    const errorMessage = fixture.nativeElement.querySelector(
-      '.auth-form__errorMessage'
-    );
-    expect(errorMessage.textContent).toContain(component.error);
+    const errorMessage = el.query(By.css('.auth-form__errorMessage'));
+
+    expect(errorMessage.nativeElement.textContent).toContain(component.error);
   });
 
   it('should switch authentication mode and clear error when switch mode is clicked', () => {
@@ -141,5 +127,9 @@ describe('AuthComponent', () => {
     const unsubscribeSpy = spyOn(component.subscription, 'unsubscribe');
     component.ngOnDestroy();
     expect(unsubscribeSpy).toHaveBeenCalled();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 });

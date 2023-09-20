@@ -1,5 +1,14 @@
 @import "../../variables.scss";
 
+.task {
+  border-radius: 5px !important;
+  border: 2px solid transparent;
+
+  &:hover:not(.dragging) {
+    border: 2px solid $accent;
+  }
+}
+
 .loading-spinner {
   text-align: center;
   margin-top: 300px;
@@ -54,7 +63,6 @@
 // .task class should be nested in .list but since cdkDragAndDrop feature pulls it out of the DOM
 // and makes it direct child of body once its dragged, we need to put it here
 .task {
-  padding: 1px;
   width: 90%;
   margin: 10px auto;
   color: rgba(0, 0, 0, 0.87);

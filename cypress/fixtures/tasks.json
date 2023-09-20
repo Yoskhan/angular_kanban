@@ -26,7 +26,7 @@
       "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
       "name": "Refactor Database Schema",
       "description": "Optimize the database schema for improved performance.",
-      "tags": [4,3],
+      "tags": [4, 3],
       "blockedBy": [],
       "status": "DONE"
     },
@@ -46,7 +46,7 @@
       "assignee": "a1139b8b-2059-46b8-9adf-ce47ff5d247c",
       "name": "Implement Payment Gateway",
       "description": "Integrate a third-party payment gateway for online payments.",
-      "tags": [1,3],
+      "tags": [1, 3],
       "blockedBy": [3],
       "status": "TODO"
     },

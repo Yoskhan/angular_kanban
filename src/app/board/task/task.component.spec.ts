@@ -1,102 +1,87 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
+
 import { TaskComponent } from './task.component';
-import { State } from '../store/board.reducer';
-
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { ReactiveFormsModule } from '@angular/forms';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Task } from '../tasks.model';
-
-import { BoardComponent } from '../board.component';
-
-const initialState: State = {
-  tasks: [],
-  tags: [],
-  users: [],
-  boardIsLoading: true,
-};
-
-const mockTask: Task = {
-  id: 1,
-  name: 'Task Name',
-  description: 'Task Description',
-  tags: [1, 2],
-  assignee: 'test',
-  blockedBy: [1],
-  status: 'TODO',
-};
+import * as BoardActions from '../store/board.actions';
+import { BoardModule } from '../board.module';
+import { mockTask } from 'src/app/utils/testing-data';
 
 describe('TaskComponent', () => {
   let component: TaskComponent;
   let fixture: ComponentFixture<TaskComponent>;
+  let el: DebugElement;
   let store: MockStore;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [TaskComponent, BoardComponent],
+  const initialState = {};
+
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
       providers: [provideMockStore({ initialState })],
-      imports: [
-        ReactiveFormsModule,
-        MatCardModule,
-        CommonModule,
-        RouterModule,
-        DragDropModule,
-        MatButtonModule,
-        MatIconModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatRadioModule,
-        MatOptionModule,
-        MatSelectModule,
-        MatCheckboxModule,
-        FlexLayoutModule,
-        SharedModule,
-        BrowserAnimationsModule,
-        NoopAnimationsModule,
-      ],
-    }).compileComponents();
+      imports: [BoardModule],
+    })
+      .compileComponents()
+      .then(() => {
+        store = TestBed.inject(MockStore);
 
-    store = TestBed.inject(MockStore);
-
-    fixture = TestBed.createComponent(TaskComponent);
-    component = fixture.componentInstance;
-    component.task = mockTask;
-    component.tags = ['Tag 1', 'Tag 2'];
-    component.tagsMap = [{ name: 'Tag 1', id: 1 }];
-    fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    fixture.destroy();
-  });
+        fixture = TestBed.createComponent(TaskComponent);
+        component = fixture.componentInstance;
+        el = fixture.debugElement;
+      });
+  }));
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should dispatch fetchTags action on ngOnInit', () => {
+    component.task = mockTask;
+
+    const dispatchSpy = spyOn(store, 'dispatch');
+
+    fixture.detectChanges();
+
+    expect(dispatchSpy).toHaveBeenCalledWith(BoardActions.fetchTags());
+  });
+
+  it('should show task title', () => {
+    component.task = mockTask;
+
+    fixture.detectChanges();
+
+    const title = el.query(By.css('mat-card-title'));
+
+    expect(title.nativeElement.textContent).toBe('Task Name');
+  });
+
+  it('should show task description', () => {
+    component.task = mockTask;
+
+    fixture.detectChanges();
+
+    const description = el.query(By.css('mat-card-content'));
+
+    expect(description.nativeElement.textContent).toBe('Task Description');
+  });
+
   it('should populate tags array with tag names', () => {
-    const expectedTags = ['Tag 1', 'Tag 2'];
-    expect(component.tags).toEqual(expectedTags);
+    component.task = mockTask;
+    component.tags = ['Tag 1', 'Tag 2'];
+
+    fixture.detectChanges();
+
+    const tags = el.query(By.css('.tags-container'));
+
+    expect(tags.nativeElement.children[0].className).toBe('tag 1 Tag');
+    expect(tags.nativeElement.children[1].className).toBe('tag 2 Tag');
   });
 
   it('should return a tag from tagsMap', () => {
+    component.tagsMap = [{ name: 'Tag 1', id: 1 }];
+
     const tagFromMap = component.getTag(1);
+
     expect(tagFromMap).toBeDefined();
     expect(tagFromMap!.name).toBe('Tag 1');
   });
@@ -104,5 +89,15 @@ describe('TaskComponent', () => {
   it('should return undefined when tag is not found', () => {
     const tagFromMap = component.getTag(3);
     expect(tagFromMap).toBeUndefined();
+  });
+
+  it('should unsubscribe on ngOnDestroy', () => {
+    const unsubscribeSpy = spyOn(component['subscription'], 'unsubscribe');
+    component.ngOnDestroy();
+    expect(unsubscribeSpy).toHaveBeenCalled();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 });

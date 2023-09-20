@@ -1,81 +1,57 @@
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatOptionModule } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { MockStore, provideMockStore } from '@ngrx/store/testing';
 
 import { AddNewTaskComponent } from './add-new-task.component';
 import * as BoardActions from '../store/board.actions';
-import { Task } from '../tasks.model';
-import { MockStore, provideMockStore } from '@ngrx/store/testing';
+import { BoardModule } from '../board.module';
+import { RouterTestingModule } from '@angular/router/testing';
+import { BoardComponent } from '../board.component';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
+import {
+  mockTask,
+  mockTaskMissingRequiredFields,
+} from 'src/app/utils/testing-data';
 
 describe('AddNewTaskComponent', () => {
   let component: AddNewTaskComponent;
   let fixture: ComponentFixture<AddNewTaskComponent>;
-  let router: jasmine.SpyObj<Router>;
+  let router: Router;
   let store: MockStore;
+  let el: DebugElement;
 
-  beforeEach(async () => {
-    router = jasmine.createSpyObj('Router', ['navigate']);
+  beforeEach(waitForAsync(() => {
+    const initialState = {
+      board: {
+        tasks: [],
+        users: [],
+        tags: [],
+      },
+    };
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [AddNewTaskComponent],
       imports: [
-        ReactiveFormsModule,
-        MatCardModule,
-        CommonModule,
-        RouterModule,
-        DragDropModule,
-        MatButtonModule,
-        MatIconModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatRadioModule,
-        MatOptionModule,
-        MatSelectModule,
-        MatCheckboxModule,
-        FlexLayoutModule,
-        SharedModule,
-        BrowserAnimationsModule,
+        BoardModule,
         NoopAnimationsModule,
+        RouterTestingModule.withRoutes([
+          { path: 'board', component: BoardComponent },
+        ]),
       ],
-      providers: [
-        provideMockStore(),
-        { provide: Router, useValue: router },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            paramMap: of(new Map([['id', '1']])),
-          },
-        },
-      ],
-    }).compileComponents();
-
-    store = TestBed.inject(MockStore);
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AddNewTaskComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+      providers: [provideMockStore({ initialState })],
+    })
+      .compileComponents()
+      .then(() => {
+        store = TestBed.inject(MockStore);
+        fixture = TestBed.createComponent(AddNewTaskComponent);
+        component = fixture.componentInstance;
+        router = TestBed.inject(Router);
+        el = fixture.debugElement;
+        fixture.detectChanges();
+      });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -83,26 +59,6 @@ describe('AddNewTaskComponent', () => {
 
   it('should initialize form when in edit mode', () => {
     component.editMode = true;
-    component.id = 1;
-
-    const mockTask: Task = {
-      id: 1,
-      name: 'Task Name',
-      description: 'Task Description',
-      tags: [],
-      assignee: 'test',
-      blockedBy: [],
-      status: 'TODO',
-    };
-    const mockState = {
-      board: {
-        tasks: [mockTask],
-        users: [],
-        tags: [],
-      },
-    };
-
-    spyOn(store, 'select').and.returnValue(of(mockState));
 
     component.ngOnInit();
 
@@ -112,16 +68,6 @@ describe('AddNewTaskComponent', () => {
   it('should initialize form when not in edit mode', () => {
     component.editMode = false;
 
-    spyOn(store, 'select').and.returnValue(
-      of({
-        board: {
-          tasks: [],
-          users: [],
-          tags: [],
-        },
-      })
-    );
-
     component.ngOnInit();
 
     expect(component.myForm).toBeTruthy();
@@ -129,19 +75,8 @@ describe('AddNewTaskComponent', () => {
 
   it('should submit the form with correct input fields', () => {
     spyOn(store, 'dispatch');
-    spyOn(component, 'onClose');
 
-    component.editMode = false;
-
-    component.myForm.setValue({
-      id: 1,
-      name: 'Task Name',
-      description: 'Task Description',
-      tags: [1],
-      assignee: 'test',
-      blockedBy: [1],
-      status: 'TODO',
-    });
+    component.myForm.setValue(mockTask);
 
     component.submitForm();
 
@@ -155,23 +90,30 @@ describe('AddNewTaskComponent', () => {
   it('should not submit the form with missing inputs', () => {
     spyOn(store, 'dispatch');
 
-    component.editMode = false;
+    component.myForm.setValue(mockTaskMissingRequiredFields);
 
     component.submitForm();
 
-    expect(store.dispatch).not.toHaveBeenCalled();
+    expect(store.dispatch).not.toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        type: BoardActions.addTask.type,
+      })
+    );
   });
 
   it('should navigate to board on close', () => {
+    const navigateSpy = spyOn(router, 'navigate');
+
     component.onClose();
-    expect(router.navigate).toHaveBeenCalledWith(['./board']);
+
+    expect(navigateSpy).toHaveBeenCalledWith(['./board']);
   });
 
   it('should call onClose when cancel button is clicked', () => {
     spyOn(component, 'onClose');
 
-    const cancelButton = fixture.nativeElement.querySelector('.cancel-button');
-    cancelButton.click();
+    const cancelButton = el.query(By.css('.cancel-button'));
+    cancelButton.nativeElement.click();
 
     expect(component.onClose).toHaveBeenCalled();
   });
@@ -179,9 +121,13 @@ describe('AddNewTaskComponent', () => {
   it('should call onClose when backdrop is clicked', () => {
     spyOn(component, 'onClose');
 
-    const backdrop = fixture.nativeElement.querySelector('.backdrop');
-    backdrop.click();
+    const backdrop = el.query(By.css('.backdrop'));
+    backdrop.nativeElement.click();
 
     expect(component.onClose).toHaveBeenCalled();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 });

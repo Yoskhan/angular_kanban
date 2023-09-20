@@ -129,7 +129,7 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
           BoardActions.updateTask({ task: this.myForm.value })
         );
       } else {
-        // When creating new Task Id property should not be in object
+        // When creating new Task, 'Id' property should not be in object
         // that is requirement from backend, and it will add id automatically
         delete this.myForm.value.id;
         this.store.dispatch(BoardActions.addTask({ task: this.myForm.value }));

@@ -5,8 +5,8 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 
-import { Component, OnDestroy, OnInit, Output } from '@angular/core';
-import { Observable, Subscription, map } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
@@ -21,58 +21,20 @@ import * as BoardActions from './store/board.actions';
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
 })
-export class BoardComponent implements OnInit, OnDestroy {
-  tasks: Tasks = { todo: [], doing: [], done: [] };
+export class BoardComponent implements OnInit {
+  tasks$: Observable<Tasks> = this.store.select(
+    BoardSelectors.selectSortedTasksByStatus
+  );
   taskStats = taskStatus;
   id?: number;
   editMode = false;
-  isLoading$ = new Observable<boolean>();
-  @Output() isDragging = false;
-  private subscription: Subscription = new Subscription();
+  isLoading$ = this.store.select(BoardSelectors.selectBoardIsLoading);
+  isDragging = false;
 
-  constructor(
-    private router: Router,
-    private store: Store<fromApp.AppState>
-  ) {}
+  constructor(private router: Router, private store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
-
     this.store.dispatch(BoardActions.fetchTasks());
-
-    this.store
-      .select(BoardSelectors.selectTasks)
-      .pipe(
-        map((tasks: Task[]) => {
-          return this.sortTasksByStatus(tasks);
-        })
-      )
-      .subscribe((tasks: Tasks) => {
-        this.tasks = tasks;
-      });
-
-      this.isLoading$ = this.store.select(BoardSelectors.selectBoardIsLoading);
-  }
-
-  private sortTasksByStatus(data: Task[]): Tasks {
-    const tasks: Tasks = {
-      todo: [],
-      doing: [],
-      done: [],
-    };
-
-    for (const key in data) {
-      const status = data[key].status;
-
-      if (status === taskStatus.TODO) {
-        tasks.todo.push(data[key]);
-      } else if (status === taskStatus.DOING) {
-        tasks.doing.push(data[key]);
-      } else if (status === taskStatus.DONE) {
-        tasks.done.push(data[key]);
-      }
-    }
-
-    return tasks;
   }
 
   closeModal() {
@@ -80,37 +42,35 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   openModal(id?: number) {
-    if (!id) {
-      this.router.navigate(['/board/create-new']);
-    } else {
-      this.router.navigate(['/board/' + id]);
-    }
+    const route = id ? ['/board', id] : ['/board/create-new'];
+    this.router.navigate(route);
   }
 
-  drop(event: CdkDragDrop<Task[]>) {
-    const updatedTask = {
-      ...event.previousContainer.data[event.previousIndex],
-    };
+  drop(event: CdkDragDrop<Task[] | undefined>) {
+    const { previousContainer, container, previousIndex, item } = event;
+    const prevData = previousContainer.data;
+    const contData = container.data;
 
-    const newStatus = event.container.element.nativeElement.dataset[
+    if (!prevData || !contData || previousIndex == null) return;
+
+    const updatedTask = { ...prevData[previousIndex] };
+    const newStatus = container.element.nativeElement.dataset[
       'status'
     ] as string;
+
+    if (!newStatus || !updatedTask) return;
 
     updatedTask.status = newStatus;
     this.store.dispatch(BoardActions.updateTask({ task: updatedTask }));
 
-    const elementId = +event.item.element.nativeElement.dataset['id']!;
-    const sortedNumberArray = this.sortObjectsById(event.container.data);
+    const elementId = +item.element.nativeElement.dataset['id']!;
+    const sortedNumberArray = this.sortObjectsById(contData);
     const newPosition = this.insertAndReturnIndex(sortedNumberArray, elementId);
 
-    transferArrayItem(
-      event.previousContainer.data,
-      event.container.data,
-      event.previousIndex,
-      newPosition
-    );
-
-    this.isDragging = false;
+    if (newPosition != null) {
+      transferArrayItem(prevData, contData, previousIndex, newPosition);
+      this.isDragging = false;
+    }
   }
 
   allowDrop(item: CdkDrag<number>) {
@@ -128,6 +88,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     const parent = detachElement?.parentNode;
     const elementId = +event.item.element.nativeElement.dataset['id']!;
+
     const sortedNumberArray = this.sortObjectsById(event.container.data);
     const newPosition = this.insertAndReturnIndex(sortedNumberArray, elementId);
 
@@ -137,7 +98,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private sortObjectsById(arr: any[]): number[] {
+  private sortObjectsById(arr: Task[]): number[] {
     const sortedObjects = arr.sort((a, b) => a.id - b.id);
     const sortedIds = sortedObjects.map((obj) => obj.id);
     return sortedIds;
@@ -164,9 +125,5 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     return left;
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
   }
 }

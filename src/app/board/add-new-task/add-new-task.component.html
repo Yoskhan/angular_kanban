@@ -20,21 +20,21 @@
       <mat-form-field>
         <mat-label>Select Tags</mat-label>
         <mat-select formControlName="tags" multiple>
-          <mat-option *ngFor="let tag of tags" [value]="tag.id">{{ tag.name }}</mat-option>
+          <mat-option *ngFor="let tag of tags$ | async" [value]="tag.id">{{ tag.name }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Assign Task To</mat-label>
         <mat-select formControlName="assignee" required>
-          <mat-option *ngFor="let user of users" [value]="user.id">{{ user.name }}</mat-option>
+          <mat-option *ngFor="let user of users$ | async" [value]="user.id">{{ user.name }}</mat-option>
         </mat-select>
       </mat-form-field>
 
       <mat-form-field>
         <mat-label>Select Tasks That Blocks This Task</mat-label>
         <mat-select formControlName="blockedBy" multiple>
-          <mat-option *ngFor="let task of tasks" [value]="task.id">{{ task.id }} - {{ task.name }}</mat-option>
+          <mat-option *ngFor="let task of tasks$ | async" [value]="task.id">{{ task.id }} - {{ task.name }}</mat-option>
         </mat-select>
       </mat-form-field>
 

@@ -1,6 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { Task, Tasks } from '../tasks.model';
-import * as FromApp from '../../store/app.reducer';
 import * as FromBoard from '../store/board.reducer';
 import { Tag } from '../tags.model';
 import { Status as taskStatus } from '../tasks.model';
@@ -9,11 +8,25 @@ const selectBoardFeature = createFeatureSelector<FromBoard.State>('board');
 
 type TagPercentage = { name: string; percentage: number };
 
-export const selectTasks = (state: FromApp.AppState) => state.board.tasks;
-export const selectUsers = (state: FromApp.AppState) => state.board.users;
-export const selectTags = (state: FromApp.AppState) => state.board.tags;
-export const selectBoardIsLoading = (state: FromApp.AppState) =>
-  state.board.boardIsLoading;
+export const selectTasks = createSelector(
+  selectBoardFeature,
+  (boardState: FromBoard.State) => boardState.tasks
+);
+
+export const selectUsers = createSelector(
+  selectBoardFeature,
+  (boardState: FromBoard.State) => boardState.users
+);
+
+export const selectTags = createSelector(
+  selectBoardFeature,
+  (boardState: FromBoard.State) => boardState.tags
+);
+
+export const selectBoardIsLoading = createSelector(
+  selectBoardFeature,
+  (boardState: FromBoard.State) => boardState.boardIsLoading
+);
 
 export const selectTaskById = (itemId: number) =>
   createSelector(selectBoardFeature, (boardState: FromBoard.State) =>

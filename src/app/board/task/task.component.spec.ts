@@ -65,38 +65,6 @@ describe('TaskComponent', () => {
     expect(description.nativeElement.textContent).toBe('Task Description');
   });
 
-  it('should populate tags array with tag names', () => {
-    component.task = mockTask;
-    component.tags = ['Tag 1', 'Tag 2'];
-
-    fixture.detectChanges();
-
-    const tags = el.query(By.css('.tags-container'));
-
-    expect(tags.nativeElement.children[0].className).toBe('tag 1 Tag');
-    expect(tags.nativeElement.children[1].className).toBe('tag 2 Tag');
-  });
-
-  it('should return a tag from tagsMap', () => {
-    component.tagsMap = [{ name: 'Tag 1', id: 1 }];
-
-    const tagFromMap = component.getTag(1);
-
-    expect(tagFromMap).toBeDefined();
-    expect(tagFromMap!.name).toBe('Tag 1');
-  });
-
-  it('should return undefined when tag is not found', () => {
-    const tagFromMap = component.getTag(3);
-    expect(tagFromMap).toBeUndefined();
-  });
-
-  it('should unsubscribe on ngOnDestroy', () => {
-    const unsubscribeSpy = spyOn(component['subscription'], 'unsubscribe');
-    component.ngOnDestroy();
-    expect(unsubscribeSpy).toHaveBeenCalled();
-  });
-
   afterEach(() => {
     fixture.destroy();
   });

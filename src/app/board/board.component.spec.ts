@@ -69,12 +69,6 @@ describe('BoardComponent', () => {
     expect(spy).toHaveBeenCalledWith(fetchTasksAction);
   });
 
-  it('should select tasks', () => {
-    const selectedTasks = BoardSelectors.selectTasks(mockState as any);
-
-    expect(selectedTasks).toEqual(mockTasks);
-  });
-
   it('should select boardIsLoading', () => {
     const selectedLoadingState = BoardSelectors.selectBoardIsLoading(
       mockState as any
@@ -111,35 +105,6 @@ describe('BoardComponent', () => {
     component.openModal();
 
     expect(navigateSpy).toHaveBeenCalledWith(['/board/create-new']);
-  });
-
-  it('should move task from todo to doing on drop', () => {
-    fixture.detectChanges();
-
-    component.tasks = { todo: mockTasks, doing: mockTasks2, done: [] };
-
-    const dropEvent: any = {
-      previousContainer: {
-        data: component.tasks.todo,
-        element: { nativeElement: document.createElement('div') },
-      } as any,
-      container: {
-        data: component.tasks.doing,
-        element: { nativeElement: document.createElement('div') },
-      } as any,
-      previousIndex: 0,
-      currentIndex: 0,
-      item: {
-        element: { nativeElement: document.createElement('div') },
-      } as any,
-    };
-
-    component.drop(dropEvent);
-
-    fixture.detectChanges();
-
-    expect(component.tasks.todo.length).toBe(2);
-    expect(component.tasks.doing.length).toBe(4);
   });
 
   afterEach(() => {

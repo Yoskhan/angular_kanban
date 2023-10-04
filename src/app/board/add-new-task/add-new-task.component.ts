@@ -77,10 +77,9 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
   private initForm = () => {
     if (this.editMode && this.id) {
       this.subscription.add(
-        this.store
-          .select(BoardSelectors.selectTaskById(this.id))
-          .subscribe((task) => {
-            this.myForm = this.formBuilder.group({
+        this.store.select(BoardSelectors.selectTaskById(this.id)).subscribe(
+          (task) =>
+            (this.myForm = this.formBuilder.group({
               name: [task?.name, Validators.required],
               description: [task?.description, Validators.required],
               tags: [task?.tags],
@@ -88,8 +87,8 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
               blockedBy: [task?.blockedBy],
               id: [task?.id],
               status: [task?.status],
-            });
-          })
+            }))
+        )
       );
     } else {
       this.myForm = this.initialForm;

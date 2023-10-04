@@ -1,9 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import * as FromApp from '../store/app.reducer';
-import { selectAuthUser } from '../auth/store/auth.selectors';
+import { selectIsAuthenticated } from '../auth/store/auth.selectors';
 import * as AuthActions from '../auth/store/auth.actions';
 
 @Component({
@@ -11,27 +10,12 @@ import * as AuthActions from '../auth/store/auth.actions';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  isAuthenticated = false;
-  private userSub$!: Subscription;
+export class HeaderComponent {
+  isAuthenticated$ = this.store.select(selectIsAuthenticated);
 
-  constructor(
-    private store: Store<FromApp.AppState>
-  ) {}
-
-  ngOnInit(): void {
-    this.userSub$ = this.store.select(selectAuthUser).subscribe((user) => {
-      this.isAuthenticated = !!user;
-    });
-  }
+  constructor(private store: Store<FromApp.AppState>) {}
 
   onLogout() {
     this.store.dispatch(AuthActions.logout());
-  }
-
-  ngOnDestroy(): void {
-    if (this.userSub$) {
-      this.userSub$.unsubscribe();
-    }
   }
 }

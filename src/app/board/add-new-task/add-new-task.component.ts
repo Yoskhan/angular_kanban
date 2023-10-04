@@ -1,7 +1,6 @@
 import {
   Component,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Output,
@@ -9,7 +8,7 @@ import {
 import { Store } from '@ngrx/store';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { Status as taskStatus } from '../tasks.model';
 import { User } from '../users.model';
@@ -26,20 +25,30 @@ import * as BoardSelectors from '../store/board.selectors';
   styleUrls: ['./add-new-task.component.scss'],
 })
 export class AddNewTaskComponent implements OnInit, OnDestroy {
-  @Input() message = '';
   @Output() close = new EventEmitter<void>();
 
   myForm!: FormGroup;
-  users: User[] = [];
-  tasks: Task[] = [];
-  tags: Tag[] = [];
+  users$: Observable<User[]> = this.store.select(BoardSelectors.selectUsers);
+  tasks$: Observable<Task[]> = this.store.select(BoardSelectors.selectTasks);
+  tags$: Observable<Tag[]> = this.store.select(BoardSelectors.selectTags);
   id?: number | null;
   editMode = false;
+
   status = [
     { id: taskStatus.TODO, title: 'ToDo' },
     { id: taskStatus.DOING, title: 'Doing' },
     { id: taskStatus.DONE, title: 'Done' },
   ];
+
+  initialForm = this.formBuilder.group({
+    name: ['', Validators.required],
+    description: ['', Validators.required],
+    tags: [[]],
+    assignee: ['', Validators.required],
+    blockedBy: [[]],
+    id: [],
+    status: ['TODO'],
+  });
 
   private subscription: Subscription = new Subscription();
 
@@ -59,66 +68,30 @@ export class AddNewTaskComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.myForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      description: ['', Validators.required],
-      tags: [[]],
-      assignee: ['', Validators.required],
-      blockedBy: [[]],
-      id: [],
-      status: ['TODO'],
-    });
+    this.myForm = this.initialForm;
 
     this.store.dispatch(BoardActions.fetchUsers());
-    this.subscribeToChanges();
     this.initForm();
-  }
-
-  private subscribeToChanges() {
-    this.subscription.add(
-      this.store.select(BoardSelectors.selectUsers).subscribe((users: User[]) => {
-        this.users = users;
-      })
-    );
-
-    this.subscription.add(
-      this.store.select(BoardSelectors.selectTags).subscribe((tags: Tag[]) => {
-        this.tags = tags;
-      })
-    );
-
-    this.subscription.add(
-      this.store.select(BoardSelectors.selectTasks).subscribe((tasks: Task[]) => {
-        this.tasks = tasks;
-      })
-    );
   }
 
   private initForm = () => {
     if (this.editMode && this.id) {
-      this.store
-        .select(BoardSelectors.selectTaskById(this.id))
-        .subscribe((task) => {
-          this.myForm = this.formBuilder.group({
-            name: [task?.name, Validators.required],
-            description: [task?.description, Validators.required],
-            tags: [task?.tags],
-            assignee: [task?.assignee, Validators.required],
-            blockedBy: [task?.blockedBy],
-            id: [task?.id],
-            status: [task?.status],
-          });
-        });
+      this.subscription.add(
+        this.store.select(BoardSelectors.selectTaskById(this.id)).subscribe(
+          (task) =>
+            (this.myForm = this.formBuilder.group({
+              name: [task?.name, Validators.required],
+              description: [task?.description, Validators.required],
+              tags: [task?.tags],
+              assignee: [task?.assignee, Validators.required],
+              blockedBy: [task?.blockedBy],
+              id: [task?.id],
+              status: [task?.status],
+            }))
+        )
+      );
     } else {
-      this.myForm = this.formBuilder.group({
-        name: ['', Validators.required],
-        description: ['', Validators.required],
-        tags: [[]],
-        assignee: ['', Validators.required],
-        blockedBy: [[]],
-        id: [],
-        status: ['TODO'],
-      });
+      this.myForm = this.initialForm;
     }
   };
 

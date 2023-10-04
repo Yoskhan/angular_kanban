@@ -7,6 +7,7 @@ import { AuthComponent } from './auth.component';
 import * as AuthActions from './store/auth.actions';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { selectAuthError } from './store/auth.selectors';
 
 describe('AuthComponent', () => {
   let component: AuthComponent;
@@ -40,14 +41,6 @@ describe('AuthComponent', () => {
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should initialize with default values', () => {
-    expect(component.hidePassword).toBeTrue();
-    expect(component.hideConfirmPassword).toBeTrue();
-    expect(component.isLoginMode).toBeTrue();
-    expect(component.error).toBeNull();
-    expect(component.isLoading).toBeFalse();
   });
 
   it('should contain input fields for username and password', () => {
@@ -100,13 +93,14 @@ describe('AuthComponent', () => {
   });
 
   it('should show error message when login fails', () => {
-    component.error = 'Login failed';
+    selectAuthError.setResult('Login failed');
 
+    store.refreshState();
     fixture.detectChanges();
 
     const errorMessage = el.query(By.css('.auth-form__errorMessage'));
 
-    expect(errorMessage.nativeElement.textContent).toContain(component.error);
+    expect(errorMessage.nativeElement.textContent).toContain('Error: Login failed');
   });
 
   it('should switch authentication mode and clear error when switch mode is clicked', () => {
@@ -121,12 +115,6 @@ describe('AuthComponent', () => {
     expect(component.isLoginMode).toBeFalse();
     expect(dispatchSpy).toHaveBeenCalledWith(AuthActions.clearError());
     expect(form.reset).toHaveBeenCalled();
-  });
-
-  it('should unsubscribe from subscription on component destroy', () => {
-    const unsubscribeSpy = spyOn(component.subscription, 'unsubscribe');
-    component.ngOnDestroy();
-    expect(unsubscribeSpy).toHaveBeenCalled();
   });
 
   afterEach(() => {

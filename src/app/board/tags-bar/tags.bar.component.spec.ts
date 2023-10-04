@@ -4,10 +4,10 @@ import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 import { TagsBarComponent } from './tags-bar.component';
-import * as BoardActions from '../store/board.actions';
 import { BoardModule } from '../board.module';
 import { Task } from '../tasks.model';
 import { mockTask, mockTags } from 'src/app/utils/testing-data';
+import * as BoardSelectors from '../store/board.selectors';
 
 const mockTasks: Task[] = [mockTask];
 
@@ -38,35 +38,15 @@ describe('TagsBarComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should dispatch fetchTags action on ngOnInit', () => {
-    const dispatchSpy = spyOn(store, 'dispatch');
-    fixture.detectChanges();
-
-    expect(dispatchSpy).toHaveBeenCalledWith(BoardActions.fetchTags());
-  });
-
-  it('should correctly calculate precentages of tags', () => {
-    component.tasks = mockTasks;
-    component.tags = mockTags;
-
-    expect(component['calculateTagPercentage']()[0].percentage).toBe(50);
-  });
-
   it('should show legend container with every feature', () => {
-    component.tasks = mockTasks;
-    component.tags = mockTags;
-    component['calculateTagPercentage']();
+    BoardSelectors.selectTags.setResult(mockTags);
+    BoardSelectors.selectTasks.setResult(mockTasks);
 
+    store.refreshState();
     fixture.detectChanges();
 
     const legendIcons = el.queryAll(By.css('.legend-container'));
 
     expect(legendIcons.length).toBe(2);
-  });
-
-  it('should unsubscribe on ngOnDestroy', () => {
-    const unsubscribeSpy = spyOn(component['subscription'], 'unsubscribe');
-    component.ngOnDestroy();
-    expect(unsubscribeSpy).toHaveBeenCalled();
   });
 });

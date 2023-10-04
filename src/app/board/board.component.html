@@ -28,14 +28,14 @@
         cdkDropList
         #todoList="cdkDropList"
         cdkDropListSortingDisabled
-        [cdkDropListData]="tasks.todo"
+        [cdkDropListData]="(tasks$ | async)?.todo"
         [cdkDropListConnectedTo]="[doneList, doingList]"
         class="list"
         (cdkDropListDropped)="drop($event)"
       >
         <app-task
           class="task"
-          *ngFor="let item of tasks.todo"
+          *ngFor="let item of (tasks$ | async)?.todo"
           [task]="item"
           [attr.data-id]="item.id"
           [isDragging]="isDragging"
@@ -57,14 +57,14 @@
         cdkDropList
         #doingList="cdkDropList"
         cdkDropListSortingDisabled
-        [cdkDropListData]="tasks.doing"
+        [cdkDropListData]="(tasks$ | async)?.doing"
         [cdkDropListConnectedTo]="[todoList, doneList]"
         class="list"
         (cdkDropListDropped)="drop($event)"
       >
         <app-task
           class="task"
-          *ngFor="let item of tasks.doing"
+          *ngFor="let item of (tasks$ | async)?.doing"
           [task]="item"
           [attr.data-id]="item.id"
           [isDragging]="isDragging"
@@ -86,7 +86,7 @@
         cdkDropList
         #doneList="cdkDropList"
         cdkDropListSortingDisabled
-        [cdkDropListData]="tasks.done"
+        [cdkDropListData]="(tasks$ | async)?.done"
         [cdkDropListConnectedTo]="[todoList, doingList]"
         [cdkDropListEnterPredicate]="allowDrop"
         class="list"
@@ -94,7 +94,7 @@
       >
         <app-task
           class="task"
-          *ngFor="let item of tasks.done"
+          *ngFor="let item of (tasks$ | async)?.done"
           [task]="item"
           [attr.data-id]="item.id"
           [isDragging]="isDragging"

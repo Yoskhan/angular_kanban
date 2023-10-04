@@ -104,7 +104,7 @@
       </button>
     </mat-form-field>
 
-    <div class="auth-form__errorMessage" *ngIf="error">Error: {{ error }}</div>
+    <div class="auth-form__errorMessage" *ngIf="error | async">Error: {{ error | async}}</div>
 
     <button mat-raised-button class="login-register-btn" color="primary">
       {{ isLoginMode ? "Login" : "Sign Up" }}
